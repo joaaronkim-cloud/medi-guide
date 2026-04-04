@@ -69,6 +69,7 @@ const faqItems = [
 const footerLinks = [
   { label: "Home", href: "/" },
   { label: "Find My Benefits", href: "/eligibility" },
+  { label: "By Age", href: "/by-age" },
   { label: "Kids & Teens", href: "/by-age/kids-teens" },
   { label: "Young Adults", href: "/by-age/young-adults" },
   { label: "Adults", href: "/by-age/adults" },
