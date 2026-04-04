@@ -1,0 +1,51 @@
+import Link from "next/link";
+
+const footerLinks = [
+  { label: "Home", href: "/" },
+  { label: "Find My Benefits", href: "/find-my-benefits" },
+  { label: "By Age", href: "/by-age" },
+  { label: "By Situation", href: "/by-situation" },
+  { label: "Hidden Benefits", href: "/hidden-benefits" },
+  { label: "About", href: "/about" },
+  { label: "Contact", href: "/contact" },
+] as const;
+
+export function GlobalFooter() {
+  return (
+    <footer className="border-t border-slate-200 bg-white/95">
+      <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
+        <div className="grid gap-8 lg:grid-cols-[1.3fr_0.7fr] lg:items-start">
+          <div>
+            <p className="text-2xl font-bold tracking-tight text-ink">MediGuide.health</p>
+            <p className="mt-4 max-w-2xl text-base leading-7 text-slate-700">
+              MediGuide.health is a free public resource. We are not affiliated with any insurance company.
+              Information is not legal or medical advice.
+            </p>
+            <p className="mt-5 text-sm leading-6 text-slate-500">
+              &copy; 2025 MediGuide.health — Built for Californians
+            </p>
+          </div>
+
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-brand-700">Quick Links</p>
+            <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {footerLinks.map((link) => (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  className="focus-ring rounded-xl px-3 py-2 text-base font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-ink"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-8 rounded-[1.25rem] border border-dashed border-slate-300 bg-slate-50 px-5 py-4 text-sm text-slate-600">
+          [TODO: Add Spanish version link here]
+        </div>
+      </div>
+    </footer>
+  );
+}

@@ -66,48 +66,38 @@ const faqItems = [
   },
 ] as const;
 
-const footerLinks = [
-  { label: "Home", href: "/" },
-  { label: "Find My Benefits", href: "/find-my-benefits" },
-  { label: "By Age", href: "/by-age" },
-  { label: "Kids & Teens", href: "/by-age/kids-teens" },
-  { label: "Young Adults", href: "/by-age/young-adults" },
-  { label: "Adults", href: "/by-age/adults" },
-  { label: "Seniors", href: "/by-age/seniors" },
-  { label: "Special Status", href: "/special-status" },
-  { label: "Help", href: "/help" },
+const homeQuickLinks = [
+  { label: "Who It's For", href: "#who-its-for" },
+  { label: "How It Works", href: "#how-it-works" },
+  { label: "FAQ", href: "#faq" },
 ] as const;
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(214,236,255,0.65),_transparent_36%),linear-gradient(180deg,_#f9fcff_0%,_#f5f9f7_46%,_#fbf7ef_100%)]">
-      <header className="border-b border-white/70 bg-white/85 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-5 sm:px-8">
-          <Link href="/" className="focus-ring rounded-md text-2xl font-bold tracking-tight text-ink">
-            MediGuide.health
-          </Link>
-
-          <nav className="hidden items-center gap-6 text-sm font-semibold text-slate-600 md:flex">
-            <a href="#who-its-for" className="transition hover:text-ink">
-              Who It&apos;s For
-            </a>
-            <a href="#how-it-works" className="transition hover:text-ink">
-              How It Works
-            </a>
-            <a href="#faq" className="transition hover:text-ink">
-              FAQ
-            </a>
-            <Link
-              href="/find-my-benefits"
-              className="focus-ring rounded-full bg-brand-700 px-4 py-2 text-white transition hover:bg-brand-900"
-            >
-              Find My Benefits
-            </Link>
-          </nav>
-        </div>
-      </header>
-
+    <div className="bg-[radial-gradient(circle_at_top,_rgba(214,236,255,0.65),_transparent_36%),linear-gradient(180deg,_#f9fcff_0%,_#f5f9f7_46%,_#fbf7ef_100%)]">
       <main className="mx-auto max-w-6xl px-6 py-8 sm:px-8 sm:py-12">
+        <section className="mb-8 rounded-[1.5rem] border border-white/70 bg-white/85 p-4 shadow-card">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-brand-700">On this page</p>
+              <p className="mt-1 text-base text-slate-600">
+                Use these quick links if you want the fastest path through the homepage.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              {homeQuickLinks.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  className="focus-ring rounded-full border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-brand-100 hover:text-ink"
+                >
+                  {link.label}
+                </a>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* Section 1: Hero */}
         <section className="overflow-hidden rounded-[2rem] border border-white/70 bg-white/92 shadow-card">
           <div className="grid gap-10 px-6 py-12 sm:px-10 lg:grid-cols-[1.25fr_0.75fr] lg:px-12 lg:py-16">
@@ -284,36 +274,6 @@ export default function HomePage() {
           </div>
         </section>
       </main>
-
-      {/* Section 6: Footer */}
-      <footer className="border-t border-white/70 bg-white/90">
-        <div className="mx-auto max-w-6xl px-6 py-10 sm:px-8">
-          <div className="grid gap-8 md:grid-cols-[1fr_auto] md:items-start">
-            <div>
-              <p className="text-2xl font-bold tracking-tight text-ink">MediGuide.health</p>
-              <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600">
-                A simpler starting point for California health coverage, still in development and growing.
-              </p>
-              <p className="mt-5 text-sm leading-6 text-slate-500">
-                This site is for informational purposes only. Not legal or medical advice.
-              </p>
-              <p className="mt-2 text-sm leading-6 text-slate-500">Spanish coming soon.</p>
-            </div>
-
-            <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm font-semibold text-slate-600">
-              {footerLinks.map((link) => (
-                <Link key={link.label} href={link.href} className="transition hover:text-ink">
-                  {link.label}
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          <div className="mt-8 rounded-[1.5rem] border border-dashed border-slate-300 bg-slate-50 px-5 py-4 text-sm text-slate-600">
-            [TODO: Add Spanish toggle here when translated content is ready]
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

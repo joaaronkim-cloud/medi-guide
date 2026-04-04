@@ -31,7 +31,7 @@ export function PlaceholderRoute({ title, description }: PlaceholderRouteProps) 
             Back to Homepage
           </Link>
           <Link
-            href="/eligibility"
+            href="/find-my-benefits"
             className="focus-ring inline-flex rounded-full bg-brand-700 px-6 py-3 text-base font-semibold text-white transition hover:bg-brand-900"
           >
             Find My Benefits &rarr;
