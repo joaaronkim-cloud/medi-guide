@@ -4,6 +4,9 @@
 
 :root {
   color-scheme: light;
+  --bg-soft: #f9fcff;
+  --ink-deep: #163047;
+  --surface-warm: #fffdf8;
 }
 
 html {
@@ -13,9 +16,17 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  background: #f8fafc;
-  color: #163047;
-  font-family: Arial, Helvetica, sans-serif;
+  background:
+    radial-gradient(circle at top, rgba(214, 236, 255, 0.48), transparent 32%),
+    linear-gradient(180deg, var(--bg-soft) 0%, #f6faf8 52%, var(--surface-warm) 100%);
+  color: var(--ink-deep);
+  font-family:
+    "Avenir Next",
+    "Segoe UI",
+    "Helvetica Neue",
+    Helvetica,
+    Arial,
+    sans-serif;
 }
 
 * {
@@ -31,6 +42,10 @@ button,
 input,
 select {
   font: inherit;
+}
+
+summary::-webkit-details-marker {
+  display: none;
 }
 
 .focus-ring {
