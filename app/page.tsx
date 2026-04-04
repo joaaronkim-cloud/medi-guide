@@ -68,7 +68,7 @@ const faqItems = [
 
 const footerLinks = [
   { label: "Home", href: "/" },
-  { label: "Find My Benefits", href: "/eligibility" },
+  { label: "Find My Benefits", href: "/find-my-benefits" },
   { label: "By Age", href: "/by-age" },
   { label: "Kids & Teens", href: "/by-age/kids-teens" },
   { label: "Young Adults", href: "/by-age/young-adults" },
@@ -98,7 +98,7 @@ export default function HomePage() {
               FAQ
             </a>
             <Link
-              href="/eligibility"
+              href="/find-my-benefits"
               className="focus-ring rounded-full bg-brand-700 px-4 py-2 text-white transition hover:bg-brand-900"
             >
               Find My Benefits
@@ -126,7 +126,7 @@ export default function HomePage() {
               <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
                 {/* TODO: If the main quiz route changes later, update this CTA link. */}
                 <Link
-                  href="/eligibility"
+                  href="/find-my-benefits"
                   className="focus-ring inline-flex rounded-full bg-brand-700 px-7 py-4 text-lg font-semibold text-white transition hover:bg-brand-900"
                 >
                   Find My Benefits &rarr;

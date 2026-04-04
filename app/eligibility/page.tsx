@@ -1,5 +1,5 @@
-import { EligibilityTool } from "@/components/EligibilityTool";
+import { redirect } from "next/navigation";
 
 export default function EligibilityPage() {
-  return <EligibilityTool />;
+  redirect("/find-my-benefits");
 }
