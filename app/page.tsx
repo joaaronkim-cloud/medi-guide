@@ -72,7 +72,7 @@ const footerLinks = [
   { label: "Kids & Teens", href: "/by-age/kids-teens" },
   { label: "Young Adults", href: "/by-age/young-adults" },
   { label: "Adults", href: "/by-age/adults" },
-  { label: "Seniors", href: "/seniors" },
+  { label: "Seniors", href: "/by-age/seniors" },
   { label: "Special Status", href: "/special-status" },
   { label: "Help", href: "/help" },
 ] as const;
