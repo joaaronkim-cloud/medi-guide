@@ -4,7 +4,7 @@ const audienceCards = [
   {
     title: "I'm a parent",
     description: "Find coverage options for kids, teens, newborns, dental, vision, and school-based care.",
-    href: "/kids-teens",
+    href: "/by-age/kids-teens",
   },
   {
     title: "I'm between jobs",
@@ -69,7 +69,7 @@ const faqItems = [
 const footerLinks = [
   { label: "Home", href: "/" },
   { label: "Find My Benefits", href: "/eligibility" },
-  { label: "Kids & Teens", href: "/kids-teens" },
+  { label: "Kids & Teens", href: "/by-age/kids-teens" },
   { label: "Adults", href: "/adults" },
   { label: "Seniors", href: "/seniors" },
   { label: "Special Status", href: "/special-status" },
