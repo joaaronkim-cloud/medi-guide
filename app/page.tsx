@@ -70,6 +70,7 @@ const footerLinks = [
   { label: "Home", href: "/" },
   { label: "Find My Benefits", href: "/eligibility" },
   { label: "Kids & Teens", href: "/by-age/kids-teens" },
+  { label: "Young Adults", href: "/by-age/young-adults" },
   { label: "Adults", href: "/adults" },
   { label: "Seniors", href: "/seniors" },
   { label: "Special Status", href: "/special-status" },
