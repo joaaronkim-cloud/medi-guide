@@ -22,7 +22,7 @@ export function GlobalFooter() {
               Information is not legal or medical advice.
             </p>
             <p className="mt-5 text-sm leading-6 text-slate-500">
-              &copy; 2025 MediGuide.health — Built for Californians
+              &copy; 2026 MediGuide.health — Built for Californians
             </p>
           </div>
 
@@ -42,8 +42,10 @@ export function GlobalFooter() {
           </div>
         </div>
 
-        <div className="mt-8 rounded-[1.25rem] border border-dashed border-slate-300 bg-slate-50 px-5 py-4 text-sm text-slate-600">
-          [TODO: Add Spanish version link here]
+        <div className="mt-8 rounded-[1.25rem] border border-slate-200 bg-slate-50 px-5 py-4 text-sm leading-6 text-slate-600">
+          <strong className="font-semibold text-slate-700">Español próximamente.</strong> We are working on a Spanish-language version of this guide. If you need help now, call{" "}
+          <span className="font-semibold text-brand-700">Covered California at 1-800-300-1506</span> or{" "}
+          <span className="font-semibold text-brand-700">BenefitsCal at 1-877-847-3663</span> — both offer Spanish-language support.
         </div>
       </div>
     </footer>

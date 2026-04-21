@@ -114,7 +114,6 @@ export default function HomePage() {
               </p>
 
               <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
-                {/* TODO: If the main quiz route changes later, update this CTA link. */}
                 <Link
                   href="/find-my-benefits"
                   className="focus-ring inline-flex rounded-full bg-brand-700 px-7 py-4 text-lg font-semibold text-white transition hover:bg-brand-900"
@@ -147,22 +146,30 @@ export default function HomePage() {
                 </span>
               </div>
 
-              <div className="mt-6 rounded-[1.5rem] border border-dashed border-slate-300 bg-white/80 p-6 text-center">
-                <p className="text-sm font-semibold uppercase tracking-[0.14em] text-slate-500">
-                  [PLACEHOLDER - ADD PHOTO OR ILLUSTRATION HERE]
+              <div className="mt-6">
+                <p className="text-sm font-semibold uppercase tracking-[0.14em] text-brand-700">
+                  What we help you understand
                 </p>
-                <p className="mt-3 text-sm leading-6 text-slate-600">
-                  Use a calm, human image here later. Think helpful guide, not stock-photo corporate energy.
-                </p>
+                <ul className="mt-4 space-y-3">
+                  {[
+                    "Medi-Cal — free or low-cost coverage",
+                    "Covered California — marketplace plans with subsidies",
+                    "Medicare — federal coverage starting at 65",
+                    "Dental, vision, and mental health paths",
+                    "Pregnancy, disability, job loss, and more",
+                  ].map((item) => (
+                    <li key={item} className="flex items-start gap-3">
+                      <span className="mt-1 flex-shrink-0 text-sm font-bold text-brand-700">✓</span>
+                      <span className="text-base leading-7 text-slate-700">{item}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
 
-              <div className="mt-6 rounded-[1.5rem] bg-white p-5 shadow-sm">
-                <p className="text-base font-semibold text-ink">What this page should feel like</p>
-                <ul className="mt-3 space-y-3 text-sm leading-6 text-slate-600">
-                  <li>Simple enough for someone who feels overwhelmed.</li>
-                  <li>Direct enough for someone who needs help quickly.</li>
-                  <li>Warm enough to feel safe, not bureaucratic.</li>
-                </ul>
+              <div className="mt-6 rounded-[1.5rem] border border-amber-200 bg-amber-50 p-4">
+                <p className="text-sm leading-6 text-amber-900">
+                  California has more coverage options than most people realize — including programs for people who think they earn too much to qualify.
+                </p>
               </div>
             </div>
           </div>
@@ -243,17 +250,16 @@ export default function HomePage() {
                 Answers to what people actually wonder.
               </h2>
               <p className="mt-4 text-lg leading-8 text-slate-700">
-                This section should stay practical. If a question comes up often in testing, add it here first.
+                These cover the most common things Californians wonder about health coverage.
               </p>
 
-              <div className="mt-6 rounded-[1.5rem] border border-dashed border-slate-300 bg-slate-50 p-5">
-                <p className="text-sm font-semibold uppercase tracking-[0.14em] text-slate-500">
-                  [TODO: Add user-tested questions here as the site grows]
-                </p>
-                <p className="mt-2 text-sm leading-6 text-slate-600">
-                  Good future topics: renewals, mixed-status families, dental coverage, and what to do after a
-                  Medi-Cal denial.
-                </p>
+              <div className="mt-6">
+                <Link
+                  href="/help"
+                  className="focus-ring inline-flex rounded-full border border-slate-300 px-5 py-3 text-base font-semibold text-slate-700 transition hover:bg-slate-50"
+                >
+                  More help and how-to-apply guides &rarr;
+                </Link>
               </div>
             </div>
 

@@ -38,17 +38,17 @@ const helperLinks = [
   {
     title: "Find My Benefits",
     description: "Answer a few questions and see which California coverage paths may fit your situation.",
-    href: "/eligibility",
+    href: "/find-my-benefits",
   },
   {
-    title: "Help / FAQ",
-    description: "Use this page for general guidance, common questions, and future step-by-step help.",
+    title: "Help and How to Apply",
+    description: "Step-by-step guides for applying to Medi-Cal, Covered California, and Medicare. Plus free help resources.",
     href: "/help",
   },
   {
-    title: "Hidden Benefits Most People Miss [TODO]",
-    description: "Temporary link until the hidden-benefits page is built.",
-    href: "/help",
+    title: "Hidden Benefits Most People Miss",
+    description: "Dental, vision, transportation, food help, prescription savings, and more — many Californians qualify but don't know it.",
+    href: "/hidden-benefits",
   },
 ] as const;
 
@@ -134,9 +134,6 @@ export default function ByAgePage() {
             ))}
           </div>
 
-          <p className="mt-5 text-sm leading-6 text-slate-500">
-            [TODO] Replace the hidden-benefits placeholder link when that page is built.
-          </p>
         </section>
       </div>
     </main>

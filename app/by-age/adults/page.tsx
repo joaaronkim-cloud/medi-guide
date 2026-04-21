@@ -80,7 +80,7 @@ const relatedLinks = [
   {
     title: "Find My Benefits",
     description: "Answer a few questions and see which California coverage paths may fit your situation.",
-    href: "/eligibility",
+    href: "/find-my-benefits",
   },
   {
     title: "Young Adults",
@@ -88,8 +88,8 @@ const relatedLinks = [
     href: "/by-age/young-adults",
   },
   {
-    title: "How to Apply [TODO]",
-    description: "Temporary link while the full step-by-step application guide is still being built.",
+    title: "Help and How to Apply",
+    description: "Step-by-step guides for applying to Medi-Cal, Covered California, and more. Plus free help resources.",
     href: "/help",
   },
 ] as const;
@@ -143,7 +143,6 @@ function BenefitCard({
       </div>
 
       <div className="mt-7">
-        {/* TODO: Replace this temporary help link with the final step-by-step how-to-apply page. */}
         <Link
           href="/help"
           className="focus-ring inline-flex rounded-full bg-emerald-700 px-5 py-3 text-base font-semibold text-white transition hover:bg-emerald-800"
@@ -252,10 +251,6 @@ export default function AdultsAgePage() {
             ))}
           </div>
 
-          <p className="mt-5 text-sm leading-6 text-slate-500">
-            [TODO] Replace the placeholder related links with final page URLs once the full age hub and
-            application guide are built.
-          </p>
         </section>
       </div>
     </main>

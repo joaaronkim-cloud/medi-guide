@@ -87,81 +87,81 @@ const AGE_RESULTS: Record<AgeAnswer, ResultCard> = {
 const EXTRA_RESULTS: Record<string, ResultCard> = {
   howToApply: {
     key: "how-to-apply",
-    title: "How to Apply [TODO]",
-    description: "Use the help page for now until the full step-by-step application guide is built.",
+    title: "How to Apply",
+    description: "Step-by-step guides for applying to Medi-Cal, Covered California, and Medicare. Plus free help resources and your patient rights.",
     href: "/help",
   },
   hiddenBenefits: {
     key: "hidden-benefits",
-    title: "Hidden Benefits Most People Miss [TODO]",
-    description: "Use the help page for now until the hidden-benefits page is built.",
-    href: "/help",
+    title: "Hidden Benefits Most People Miss",
+    description: "Dental, vision, transportation, food help, in-home care, prescription savings, and more — many Californians qualify but don't know it.",
+    href: "/hidden-benefits",
   },
   helpFaq: {
     key: "help-faq",
-    title: "Help / FAQ",
-    description: "Use this page if you need a simpler starting point or want help understanding the next step.",
+    title: "Help and Common Questions",
+    description: "Answers to the most common questions about California health coverage, plus free resources to get real help.",
     href: "/help",
   },
   pregnancy: {
     key: "pregnancy",
-    title: "Pregnancy and New Parent Help [TODO]",
-    description: "Use the Special Status page for now until a dedicated pregnancy page is built.",
-    href: "/special-status",
+    title: "Pregnancy and New Parent Help",
+    description: "Coverage options for pregnancy and newborns, including Medi-Cal for pregnant women, WIC, and Family PACT for family planning.",
+    href: "/by-situation#pregnant",
   },
   disability: {
     key: "disability",
-    title: "Disability Support [TODO]",
-    description: "Use the Special Status page for now until a dedicated disability page is built.",
-    href: "/special-status",
+    title: "Disability and Chronic Condition Support",
+    description: "Medi-Cal pathways, IHSS in-home support, and other California programs for people with disabilities.",
+    href: "/by-situation#disability",
   },
   immigration: {
     key: "immigration",
-    title: "Immigrant and Undocumented Help [TODO]",
-    description: "Use the Special Status page for now until a dedicated immigration page is built.",
-    href: "/special-status",
+    title: "Undocumented and Mixed-Status Help",
+    description: "California coverage options for undocumented individuals and mixed-status families, including what triggers — and doesn't trigger — immigration concerns.",
+    href: "/by-situation#immigration",
   },
   veteran: {
     key: "veteran",
-    title: "Veteran Coverage Help [TODO]",
-    description: "Use the Special Status page for now until a dedicated veteran page is built.",
-    href: "/special-status",
+    title: "Veteran Coverage Help",
+    description: "VA health care, CalVet navigation, and how Medi-Cal or Covered California can work alongside VA benefits.",
+    href: "/by-situation#veteran",
   },
   homelessness: {
     key: "homelessness",
-    title: "Housing and Health Support [TODO]",
-    description: "Use the Special Status page for now until a dedicated homelessness or CalAIM page is built.",
-    href: "/special-status",
+    title: "Housing Instability and Health Support",
+    description: "Medi-Cal enrollment options for people without a stable address, plus CalAIM enhanced care management.",
+    href: "/by-situation#homelessness",
   },
   mentalHealth: {
     key: "mental-health",
-    title: "Mental Health Support [TODO]",
-    description: "Use the help page for now until a dedicated mental health page is built.",
-    href: "/help",
+    title: "Mental Health Support",
+    description: "Free mental health resources including the 988 crisis line, Medi-Cal behavioral health, and community mental health services.",
+    href: "/hidden-benefits#mental-health",
   },
   dentalVision: {
     key: "dental-vision",
-    title: "Dental and Vision Help [TODO]",
-    description: "Use the help page for now until a dedicated dental and vision page is built.",
-    href: "/help",
+    title: "Dental and Vision Help",
+    description: "Adult Medi-Cal dental (restored in 2022), Medi-Cal vision coverage, and how to find in-network providers.",
+    href: "/hidden-benefits#dental-vision",
   },
   prescription: {
     key: "prescription",
-    title: "Prescription Cost Help [TODO]",
-    description: "Use the help page for now until more detailed prescription-cost guidance is built.",
-    href: "/help",
+    title: "Prescription Cost Help",
+    description: "Extra Help for Medicare Part D, Medi-Cal prescription coverage, and how to lower your drug costs.",
+    href: "/hidden-benefits#prescription",
   },
   currentMediCal: {
     key: "current-medi-cal",
-    title: "Medi-Cal Support and Extra Benefits [TODO]",
-    description: "Use the help page for now until hidden-benefits and Medi-Cal support pages are built.",
-    href: "/help",
+    title: "Already on Medi-Cal? See What Else You Qualify For",
+    description: "Many Medi-Cal members miss extra benefits — dental, vision, transportation, in-home care, and CalFresh food help.",
+    href: "/hidden-benefits",
   },
   jobLoss: {
     key: "job-loss",
-    title: "Coverage Gap After Job Loss [TODO]",
-    description: "Use the help page for now until a dedicated job-loss coverage page is built.",
-    href: "/help",
+    title: "Coverage Gap After Job Loss",
+    description: "Your options when you lose employer coverage: Covered California special enrollment (60-day window), Medi-Cal, and COBRA.",
+    href: "/by-situation#job-loss",
   },
 };
 
@@ -241,7 +241,6 @@ function getQuizResults({
       addCard(AGE_RESULTS["65-plus"]);
     }
 
-    // [TODO: Add more detailed matching logic for prescription help.]
     addCard(EXTRA_RESULTS.prescription);
   }
 
@@ -499,7 +498,7 @@ export function FindMyBenefitsQuiz() {
                       href={result.href}
                       className="focus-ring mt-6 inline-flex rounded-full bg-brand-700 px-5 py-3 text-base font-semibold text-white transition hover:bg-brand-900"
                     >
-                      Read more
+                      See your options &rarr;
                     </Link>
                   </article>
                 ))}
@@ -528,9 +527,15 @@ export function FindMyBenefitsQuiz() {
         <section className="mt-8 rounded-[1.75rem] border border-amber-200 bg-amber-50 p-5 sm:p-6">
           <p className="text-base leading-7 text-amber-900">
             <strong>Good to know:</strong> This quiz is only a starting point. It does not ask for income,
-            and it does not save anything you click.{" "}
-            {/* [TODO: Add income question in v2.] */}
-            {/* [TODO: Link to Covered CA calculator.] */}
+            and it does not save anything you click. For a more exact estimate, use the{" "}
+            <a
+              href="https://www.coveredca.com/shop-and-compare/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline decoration-dotted underline-offset-2 hover:text-amber-700"
+            >
+              Covered California Shop and Compare tool
+            </a>.
           </p>
         </section>
       </main>
