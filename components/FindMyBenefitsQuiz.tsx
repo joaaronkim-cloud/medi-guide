@@ -26,6 +26,8 @@ type ResultCard = {
   title: string;
   description: string;
   href: string;
+  applyHref?: string;
+  applyLabel?: string;
 };
 
 const QUESTION_COUNT = 3;
@@ -61,26 +63,34 @@ const AGE_RESULTS: Record<AgeAnswer, ResultCard> = {
   "under-18": {
     key: "age-kids",
     title: "Kids and Teens",
-    description: "Start with the child and teen page for coverage, dental, vision, school health, and foster youth support.",
+    description: "Coverage, dental, vision, and school health for children and teens — including foster youth support.",
     href: "/by-age/kids-teens",
+    applyHref: "https://benefitscal.com/ApplyForBenefits/begin/ABOVR?lang=en",
+    applyLabel: "Apply on BenefitsCal",
   },
   "18-29": {
     key: "age-young-adults",
     title: "Young Adults",
-    description: "Start here for parent plans, Medi-Cal, students, gig work, reproductive care, and immigration-related rules.",
+    description: "Start here for parent plans, Medi-Cal, students, gig work, reproductive care, and immigration status questions.",
     href: "/by-age/young-adults",
+    applyHref: "https://benefitscal.com/ApplyForBenefits/begin/ABOVR?lang=en",
+    applyLabel: "Apply on BenefitsCal",
   },
   "30-64": {
     key: "age-adults",
     title: "Adults",
     description: "Start here for Medi-Cal, Covered California, COBRA, self-employed coverage, and adult dental.",
     href: "/by-age/adults",
+    applyHref: "https://benefitscal.com/ApplyForBenefits/begin/ABOVR?lang=en",
+    applyLabel: "Apply on BenefitsCal",
   },
   "65-plus": {
     key: "age-seniors",
     title: "Seniors",
     description: "Start here for Medicare, drug coverage, Medi-Cal help, PACE, and income-based senior benefits.",
     href: "/by-age/seniors",
+    applyHref: "https://www.ssa.gov/medicare/sign-up",
+    applyLabel: "Sign Up for Medicare",
   },
 };
 
@@ -90,78 +100,104 @@ const EXTRA_RESULTS: Record<string, ResultCard> = {
     title: "How to Apply",
     description: "Step-by-step guides for applying to Medi-Cal, Covered California, and Medicare. Plus free help resources and your patient rights.",
     href: "/help",
+    applyHref: "https://benefitscal.com/ApplyForBenefits/begin/ABOVR?lang=en",
+    applyLabel: "Apply on BenefitsCal",
   },
   hiddenBenefits: {
     key: "hidden-benefits",
     title: "Hidden Benefits Most People Miss",
     description: "Dental, vision, transportation, food help, in-home care, prescription savings, and more — many Californians qualify but don't know it.",
     href: "/hidden-benefits",
+    applyHref: "https://benefitscal.com/ApplyForBenefits/begin/ABOVR?lang=en",
+    applyLabel: "Apply on BenefitsCal",
   },
   helpFaq: {
     key: "help-faq",
     title: "Help and Common Questions",
     description: "Answers to the most common questions about California health coverage, plus free resources to get real help.",
     href: "/help",
+    applyHref: "https://benefitscal.com/ApplyForBenefits/begin/ABOVR?lang=en",
+    applyLabel: "Apply on BenefitsCal",
   },
   pregnancy: {
     key: "pregnancy",
     title: "Pregnancy and New Parent Help",
     description: "Coverage options for pregnancy and newborns, including Medi-Cal for pregnant women, WIC, and Family PACT for family planning.",
     href: "/by-situation#pregnant",
+    applyHref: "https://benefitscal.com/ApplyForBenefits/begin/ABOVR?lang=en",
+    applyLabel: "Apply on BenefitsCal",
   },
   disability: {
     key: "disability",
     title: "Disability and Chronic Condition Support",
-    description: "Medi-Cal pathways, IHSS in-home support, and other California programs for people with disabilities.",
+    description: "Medi-Cal pathways, IHSS in-home care support, and other California programs for people with disabilities or chronic conditions.",
     href: "/by-situation#disability",
+    applyHref: "https://benefitscal.com/ApplyForBenefits/begin/ABOVR?lang=en",
+    applyLabel: "Apply on BenefitsCal",
   },
   immigration: {
     key: "immigration",
     title: "Undocumented and Mixed-Status Help",
     description: "California coverage options for undocumented individuals and mixed-status families, including what triggers — and doesn't trigger — immigration concerns.",
     href: "/by-situation#immigration",
+    applyHref: "https://benefitscal.com/ApplyForBenefits/begin/ABOVR?lang=en",
+    applyLabel: "Apply on BenefitsCal",
   },
   veteran: {
     key: "veteran",
     title: "Veteran Coverage Help",
     description: "VA health care, CalVet navigation, and how Medi-Cal or Covered California can work alongside VA benefits.",
     href: "/by-situation#veteran",
+    applyHref: "https://www.va.gov/health-care/apply-for-health-care-form-10-10ez/",
+    applyLabel: "Apply for VA Health Care",
   },
   homelessness: {
     key: "homelessness",
     title: "Housing Instability and Health Support",
-    description: "Medi-Cal enrollment options for people without a stable address, plus CalAIM enhanced care management.",
+    description: "Medi-Cal enrollment options for people without a stable address, plus care coordination support for people with complex needs.",
     href: "/by-situation#homelessness",
+    applyHref: "https://benefitscal.com/ApplyForBenefits/begin/ABOVR?lang=en",
+    applyLabel: "Apply on BenefitsCal",
   },
   mentalHealth: {
     key: "mental-health",
     title: "Mental Health Support",
     description: "Free mental health resources including the 988 crisis line, Medi-Cal behavioral health, and community mental health services.",
     href: "/hidden-benefits#mental-health",
+    applyHref: "https://benefitscal.com/ApplyForBenefits/begin/ABOVR?lang=en",
+    applyLabel: "Apply on BenefitsCal",
   },
   dentalVision: {
     key: "dental-vision",
     title: "Dental and Vision Help",
-    description: "Adult Medi-Cal dental (restored in 2022), Medi-Cal vision coverage, and how to find in-network providers.",
+    description: "Adult Medi-Cal dental, Medi-Cal vision coverage, and how to find in-network providers near you.",
     href: "/hidden-benefits#dental-vision",
+    applyHref: "https://benefitscal.com/ApplyForBenefits/begin/ABOVR?lang=en",
+    applyLabel: "Apply on BenefitsCal",
   },
   prescription: {
     key: "prescription",
     title: "Prescription Cost Help",
     description: "Extra Help for Medicare Part D, Medi-Cal prescription coverage, and how to lower your drug costs.",
     href: "/hidden-benefits#prescription",
+    applyHref: "https://benefitscal.com/ApplyForBenefits/begin/ABOVR?lang=en",
+    applyLabel: "Apply on BenefitsCal",
   },
   currentMediCal: {
     key: "current-medi-cal",
     title: "Already on Medi-Cal? See What Else You Qualify For",
     description: "Many Medi-Cal members miss extra benefits — dental, vision, transportation, in-home care, and CalFresh food help.",
     href: "/hidden-benefits",
+    applyHref: "https://benefitscal.com/ApplyForBenefits/begin/ABOVR?lang=en",
+    applyLabel: "Check on BenefitsCal",
   },
   jobLoss: {
     key: "job-loss",
     title: "Coverage Gap After Job Loss",
     description: "Your options when you lose employer coverage: Covered California special enrollment (60-day window), Medi-Cal, and COBRA.",
     href: "/by-situation#job-loss",
+    applyHref: "https://www.coveredca.com/apply/",
+    applyLabel: "Apply on Covered CA",
   },
 };
 
@@ -494,12 +530,24 @@ export function FindMyBenefitsQuiz() {
                   >
                     <h3 className="text-2xl font-bold tracking-tight text-ink">{result.title}</h3>
                     <p className="mt-3 text-lg leading-8 text-slate-700">{result.description}</p>
-                    <Link
-                      href={result.href}
-                      className="focus-ring mt-6 inline-flex rounded-full bg-brand-700 px-5 py-3 text-base font-semibold text-white transition hover:bg-brand-900"
-                    >
-                      See your options &rarr;
-                    </Link>
+                    <div className="mt-6 flex flex-wrap gap-3">
+                      {result.applyHref && (
+                        <a
+                          href={result.applyHref}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="focus-ring inline-flex rounded-full bg-emerald-700 px-5 py-3 text-base font-semibold text-white transition hover:bg-emerald-800"
+                        >
+                          {result.applyLabel ?? "Apply Now"} &rarr;
+                        </a>
+                      )}
+                      <Link
+                        href={result.href}
+                        className="focus-ring inline-flex rounded-full border border-brand-700 px-5 py-3 text-base font-semibold text-brand-700 transition hover:bg-brand-50"
+                      >
+                        See your options &rarr;
+                      </Link>
+                    </div>
                   </article>
                 ))}
               </div>
