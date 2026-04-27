@@ -401,7 +401,7 @@ export function FindMyBenefitsQuiz() {
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-700">Find My Benefits</p>
               <h1 className="mt-3 text-4xl font-bold tracking-tight text-ink sm:text-5xl">
-                Find My Benefits
+                Let&apos;s find what you qualify for.
               </h1>
             </div>
 
@@ -414,10 +414,10 @@ export function FindMyBenefitsQuiz() {
           </div>
 
           <p className="mt-5 max-w-3xl text-lg leading-8 text-slate-700 sm:text-xl">
-            Answer 3 simple questions to see which California health benefits you may want to explore first.
+            Based on your answers, we'll show you the California health programs most likely to help your situation.
           </p>
           <p className="mt-3 max-w-3xl text-base leading-7 text-slate-600 sm:text-lg">
-            This is a simple guide. It does not save your information.
+            Three quick questions. No account. Nothing saved.
           </p>
         </header>
 
@@ -574,8 +574,7 @@ export function FindMyBenefitsQuiz() {
 
         <section className="mt-8 rounded-[1.75rem] border border-amber-200 bg-amber-50 p-5 sm:p-6">
           <p className="text-base leading-7 text-amber-900">
-            <strong>Good to know:</strong> This quiz is only a starting point. It does not ask for income,
-            and it does not save anything you click. For a more exact estimate, use the{" "}
+            Your answers stay on your screen — nothing is saved, stored, or shared. For a more exact estimate, use the{" "}
             <a
               href="https://www.coveredca.com/shop-and-compare/"
               target="_blank"

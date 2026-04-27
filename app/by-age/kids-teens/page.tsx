@@ -18,7 +18,7 @@ const benefitCards = [
       "This can be a strong all-in-one option for everyday care and bigger medical needs.",
     ],
     action:
-      "File one application through BenefitsCal or Covered California and let the system sort your child into the right program.",
+      "Apply through BenefitsCal.com — one application covers all California programs. The system will match your child to the right one based on your family's situation.",
   },
   {
     id: "cchip",
@@ -30,7 +30,7 @@ const benefitCards = [
       "This can still be much cheaper than paying full price for a private family plan.",
     ],
     action:
-      "Do not decline this option if California offers it, because pushing a child into a full-price private plan is usually the more expensive choice.",
+      "If California offers this to your child, it's worth taking — it's almost always more affordable than a private plan and coverage is comparable.",
   },
   {
     id: "covered-california-children",
@@ -77,7 +77,7 @@ const benefitCards = [
       "Many former foster youth can keep Medi-Cal until age 26 regardless of income.",
       "This protection helps young people avoid losing coverage during a major life transition.",
     ],
-    action: "Make sure the county marks the child correctly before they age out.",
+    action: "Make sure the county has properly recorded the youth's foster care status before they turn 18 — this is what keeps their Medi-Cal active. Errors here are common and worth checking on.",
   },
   {
     id: "special-needs",
@@ -89,7 +89,7 @@ const benefitCards = [
       "Using more than one support path at the same time can save families weeks or months of delay.",
     ],
     action:
-      "Start all three doors at once instead of waiting to try one system at a time.",
+      "Don't wait for one application to finish before starting the next — apply to all three programs at the same time to avoid months of delays.",
   },
   {
     id: "school-services",
@@ -191,8 +191,9 @@ export default function KidsTeensPage() {
           </div>
 
           <p className="mt-5 max-w-4xl text-lg leading-8 text-slate-700 sm:text-xl">
-            This page covers the main California health benefits for children and teens, including health
-            coverage, dental and vision care, newborn coverage, foster youth coverage, and school-based help.
+            If you're a parent trying to figure out what your kids are covered for — or what they could be
+            covered for — you're in the right place. California has more options for children than most
+            families realize, and most of them are free or very low-cost.
           </p>
 
           <div className="mt-6 rounded-[1.5rem] border border-brand-100 bg-brand-50/70 p-4">
@@ -226,15 +227,12 @@ export default function KidsTeensPage() {
 
         <section className="mt-8 rounded-[1.75rem] border border-amber-200 bg-amber-50 p-5 sm:p-6">
           <p className="text-base leading-7 text-amber-900">
-            <strong>Plain-English note:</strong> You may still see program names like Medi-Cal, CCHIP, and
-            MCAP on official websites. Medi-Cal is California's public health coverage program. CCHIP is used
-            for some child coverage in a few Bay Area counties. MCAP is a California pregnancy coverage
-            program that can affect newborn enrollment.
+            <strong>Plain-English note:</strong> You'll see these names on official California websites — here's what they mean. Medi-Cal is California's main public health coverage program. CCHIP fills coverage gaps for some children in San Francisco, San Mateo, and Santa Clara counties. MCAP is a pregnancy coverage program — it matters for newborn enrollment because how a baby is enrolled at birth affects their first weeks of coverage.
           </p>
         </section>
 
         <section className="mt-8 rounded-[2rem] border border-white/70 bg-white/92 p-6 shadow-card sm:p-10">
-          <h2 className="text-3xl font-bold tracking-tight text-ink">You might also want to read:</h2>
+          <h2 className="text-3xl font-bold tracking-tight text-ink">What to do next:</h2>
 
           <div className="mt-6 grid gap-4 md:grid-cols-3">
             {relatedLinks.map((link) => (

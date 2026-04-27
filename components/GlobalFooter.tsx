@@ -18,8 +18,7 @@ export function GlobalFooter() {
           <div>
             <p className="text-2xl font-bold tracking-tight text-ink">MediGuide.health</p>
             <p className="mt-4 max-w-2xl text-base leading-7 text-slate-700">
-              MediGuide.health is a free public resource. We are not affiliated with any insurance company.
-              Information is not legal or medical advice.
+              MediGuide is a free, independent guide for Californians. We're not affiliated with any insurer or government agency. Nothing here is legal or medical advice — we're here to help you understand your options and find your next step.
             </p>
             <p className="mt-5 text-sm leading-6 text-slate-500">
               &copy; 2026 MediGuide.health — Built for Californians
