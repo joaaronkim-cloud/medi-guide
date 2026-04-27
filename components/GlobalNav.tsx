@@ -61,7 +61,7 @@ export function GlobalNav() {
               href="/help"
               className="focus-ring inline-flex rounded-full bg-teal-700 px-5 py-3 text-base font-semibold text-white transition hover:bg-teal-800"
             >
-              Get Help
+              How to Apply
             </Link>
           </div>
 
@@ -105,7 +105,7 @@ export function GlobalNav() {
                 href="/help"
                 className="focus-ring mt-2 inline-flex rounded-2xl bg-teal-700 px-4 py-4 text-base font-semibold text-white transition hover:bg-teal-800"
               >
-                Get Help
+                How to Apply
               </Link>
             </nav>
           </div>

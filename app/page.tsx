@@ -3,22 +3,22 @@ import Link from "next/link";
 const audienceCards = [
   {
     title: "I'm a parent",
-    description: "Find coverage options for kids, teens, newborns, dental, vision, and school-based care.",
+    description: "Find out what your kids are covered for — checkups, dental, vision, and more.",
     href: "/by-age/kids-teens",
   },
   {
     title: "I'm between jobs",
-    description: "See low-cost options if your work changed, your income dropped, or you lost insurance.",
+    description: "See your options when work changed and you're figuring out what comes next.",
     href: "/adults",
   },
   {
     title: "I'm turning 65",
-    description: "Get a simpler starting point for Medicare, Medi-Cal, drug coverage, and next steps.",
+    description: "Get a plain-English starting point for Medicare, prescriptions, and what to do first.",
     href: "/seniors",
   },
   {
-    title: "I have a special situation",
-    description: "Find help for pregnancy, disability, immigration issues, homelessness, recovery, and more.",
+    title: "My situation is complicated",
+    description: "Pregnancy, disability, immigration, housing, or something else — we cover these too.",
     href: "/special-status",
   },
 ] as const;
@@ -26,15 +26,15 @@ const audienceCards = [
 const howItWorksSteps = [
   {
     title: "Answer 3 quick questions",
-    description: "We keep it short, plain, and easy to follow.",
+    description: "Your age, your situation, and what you need help with most.",
   },
   {
-    title: "See what you qualify for",
-    description: "We show the programs that may fit your situation in California.",
+    title: "See what fits you",
+    description: "We'll show the California programs that are most likely to help.",
   },
   {
     title: "Get a simple action plan",
-    description: "You leave with the next step to take instead of a wall of confusing text.",
+    description: "Walk away knowing your next step — a clear, simple action instead of a pile of government links.",
   },
 ] as const;
 
@@ -50,9 +50,9 @@ const faqItems = [
       "Yes. We help you quickly see which California coverage paths may fit, then point you to the next action to take.",
   },
   {
-    question: "What if I am undocumented or my family has mixed immigration status?",
+    question: "What if I'm undocumented or my family has mixed immigration status?",
     answer:
-      "Some California programs still cover children, pregnant people, and other groups even when immigration rules are complicated. We explain those paths in plain English.",
+      "California covers children under 19 and pregnant people regardless of immigration status. Adults have fewer options, but they do exist. We walk you through what's available without judgment.",
   },
   {
     question: "I already have a problem right now. Can this still help me?",
@@ -62,7 +62,7 @@ const faqItems = [
   {
     question: "Is this official government advice?",
     answer:
-      "No. This site is an informational guide built to make public program information easier to understand. It is not legal or medical advice.",
+      "No — MediGuide is an independent guide, not a government site. We use official sources to explain programs in plain English, but we're not making decisions for you. Think of us as a knowledgeable friend who helps you figure out where to start.",
   },
 ] as const;
 
@@ -106,11 +106,10 @@ export default function HomePage() {
                 California health coverage made simpler
               </p>
               <h1 className="mt-4 max-w-3xl text-4xl font-bold tracking-tight text-ink sm:text-5xl lg:text-6xl">
-                Find out what health coverage you actually qualify for, in plain English.
+                Figure out what health benefits you qualify for — no confusing forms, no jargon.
               </h1>
               <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-700 sm:text-xl">
-                We help Californians figure out what coverage paths may fit their real life without sending
-                them through a maze of confusing websites.
+                Health coverage in California is complicated. We made a guide that isn't.
               </p>
 
               <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
@@ -142,20 +141,20 @@ export default function HomePage() {
                   California-focused
                 </span>
                 <span className="rounded-full bg-white px-3 py-1 text-sm font-semibold text-brand-700 shadow-sm">
-                  Action-first
+                  Always free
                 </span>
               </div>
 
               <div className="mt-6">
                 <p className="text-sm font-semibold uppercase tracking-[0.14em] text-brand-700">
-                  What we help you understand
+                  We cover the programs most Californians actually need
                 </p>
                 <ul className="mt-4 space-y-3">
                   {[
                     "Medi-Cal — free or low-cost coverage",
-                    "Covered California — marketplace plans with subsidies",
+                    "Covered California — plans with financial help based on your income",
                     "Medicare — federal coverage starting at 65",
-                    "Dental, vision, and mental health paths",
+                    "Dental, vision, and mental health — yes, these are often covered too",
                     "Pregnancy, disability, job loss, and more",
                   ].map((item) => (
                     <li key={item} className="flex items-start gap-3">
@@ -183,7 +182,7 @@ export default function HomePage() {
               Start with the situation that sounds most like you.
             </h2>
             <p className="mt-4 text-lg leading-8 text-slate-700">
-              You should not have to learn every California program just to figure out your next step.
+              You shouldn't need a law degree to figure out your health coverage. Start here.
             </p>
           </div>
 
@@ -214,7 +213,7 @@ export default function HomePage() {
           <div className="max-w-3xl">
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-700">How it works</p>
             <h2 className="mt-3 text-3xl font-bold tracking-tight text-ink sm:text-4xl">
-              A calmer way to figure out what to do next.
+              Here's how it works — it takes about 2 minutes.
             </h2>
             <p className="mt-4 text-lg leading-8 text-slate-700">
               No giant forms. No confusing agency language. Just a short path toward the next best step.
@@ -237,7 +236,7 @@ export default function HomePage() {
         {/* Section 4: Trust signal bar */}
         <section className="mt-8 rounded-[1.5rem] border border-emerald-100 bg-emerald-50/85 px-6 py-5 text-center shadow-sm">
           <p className="text-base font-semibold text-emerald-900 sm:text-lg">
-            MediGuide.health is a free, non-commercial guide for Californians. We don&apos;t sell your data. Ever.
+            MediGuide is a free public guide for Californians. No ads, no insurance company ties, no data selling. Ever.
           </p>
         </section>
 
@@ -247,10 +246,10 @@ export default function HomePage() {
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-700">Quick FAQ</p>
               <h2 className="mt-3 text-3xl font-bold tracking-tight text-ink sm:text-4xl">
-                Answers to what people actually wonder.
+                Common questions, honest answers.
               </h2>
               <p className="mt-4 text-lg leading-8 text-slate-700">
-                These cover the most common things Californians wonder about health coverage.
+                Things people ask us most often about California health coverage.
               </p>
 
               <div className="mt-6">
