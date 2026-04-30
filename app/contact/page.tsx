@@ -99,25 +99,29 @@ export default function ContactPage() {
         <section className="mt-5 rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-card sm:p-8">
           <h2 className="text-2xl font-bold tracking-tight text-ink sm:text-3xl">How to reach us</h2>
           <p className="mt-4 text-lg leading-8 text-slate-700">
-            The best way to share a correction or suggestion is through our GitHub repository, where we
-            track site improvements in the open.
+            Fill out our short feedback form — it takes about two minutes. Let us know what page you
+            were on, what seemed off, or what you wish we had covered.
           </p>
 
           <div className="mt-5 rounded-[1.5rem] border border-brand-100 bg-brand-50 p-5">
-            <p className="text-base font-semibold text-ink">Report an issue or suggest a change</p>
+            <p className="text-base font-semibold text-ink">Send us a message</p>
             <p className="mt-2 text-base leading-7 text-slate-700">
-              Open an issue in the MediGuide.health GitHub repository. Include the page URL, what you
-              think is wrong, and (if you have it) a link to an official source with the correct
-              information.
+              Use our contact form to report incorrect information, suggest a missing topic, or share
+              any feedback about the site. No account or sign-in is required.
             </p>
-            <p className="mt-3 text-sm text-slate-500">
-              GitHub: github.com/mediguide-health
-            </p>
+            <a
+              href="https://docs.google.com/forms/d/e/1FAIpQLScCWoXsn5pytLf2iDjZYgr338nFz88nL7u1bhssUHOIh68l4w/viewform?usp=dialog"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="focus-ring mt-4 inline-flex rounded-full bg-brand-700 px-5 py-3 text-base font-semibold text-white transition hover:bg-brand-900"
+            >
+              Open Contact Form &rarr;
+            </a>
           </div>
 
           <p className="mt-5 text-base leading-7 text-slate-600">
-            Please note that we are a small volunteer project. We read all feedback but may not be
-            able to respond to every message individually.
+            We are a small volunteer project. We read all feedback but may not be able to respond
+            to every message individually.
           </p>
         </section>
       </div>
