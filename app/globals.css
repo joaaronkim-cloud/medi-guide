@@ -74,3 +74,130 @@ summary::-webkit-details-marker {
 .focus-ring {
   @apply focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-100 focus-visible:ring-offset-2;
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   PRINT STYLES
+   Applied only during browser print / Ctrl+P / Save as PDF.
+   Screen layout is completely unaffected by any rule below.
+   ═══════════════════════════════════════════════════════════════════ */
+@media print {
+
+  /* ── Page geometry ────────────────────────────────────────────── */
+  @page {
+    margin: 1.25cm 1.5cm;
+    size: letter portrait;
+  }
+
+  /* ── Strip web colors, gradients, and decorative effects ──────── */
+  *,
+  *::before,
+  *::after {
+    background: white !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    color: #1a1a1a !important;
+    border-color: #d1d5db !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* ── Base layout ──────────────────────────────────────────────── */
+  html,
+  body {
+    font-size: 12pt;
+    line-height: 1.6;
+  }
+
+  /* Let the flex wrapper flow naturally as block on paper */
+  body > div {
+    display: block !important;
+    min-height: 0 !important;
+  }
+
+  /* Remove max-width constraints designed for wide browser viewports */
+  [class*="max-w-"] {
+    max-width: none !important;
+    width: 100% !important;
+  }
+
+  /* ── Typography ───────────────────────────────────────────────── */
+  h1 { font-size: 22pt; }
+  h2 { font-size: 16pt; }
+  h3 { font-size: 13pt; }
+
+  p,
+  li {
+    font-size: 11pt;
+    max-width: none !important;
+  }
+
+  a {
+    text-decoration: none !important;
+  }
+
+  /* ── Print-only brand header ──────────────────────────────────── */
+  /* Injected above the page content since GlobalNav is hidden       */
+  main::before {
+    content: "mediguide.health";
+    display: block;
+    font-size: 14pt;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding-bottom: 8pt;
+    border-bottom: 1.5pt solid #1a1a1a !important;
+    margin-bottom: 16pt;
+  }
+
+  /* ── Hide non-printable UI chrome ────────────────────────────── */
+
+  /* GlobalNav sticky header */
+  header {
+    display: none !important;
+  }
+
+  /* All interactive buttons */
+  button {
+    display: none !important;
+  }
+
+  /* All pill-style CTA and action links (Apply Now, Back to Homepage,
+     Learn how to apply, See your options, Find My Benefits, etc.)   */
+  a[class*="rounded-full"] {
+    display: none !important;
+  }
+
+  /* Jump-to-section anchor nav strips present on every content page */
+  nav[aria-label="Jump to section"],
+  nav[aria-label="Jump to situation"],
+  nav[aria-label="Main"],
+  nav[aria-label="Mobile"] {
+    display: none !important;
+  }
+
+  /* Footer: hide the Quick Links column and the Spanish note box.
+     Keeps: MediGuide.health brand name + full disclaimer paragraph. */
+  footer .grid > div:last-child,
+  footer .grid + div {
+    display: none !important;
+  }
+
+  /* ── Page break control ───────────────────────────────────────── */
+
+  /* Keep benefit cards and sections intact — no mid-card page breaks */
+  section,
+  article {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Keep headings attached to the content that follows them */
+  h1,
+  h2,
+  h3 {
+    break-after: avoid;
+    page-break-after: avoid;
+    orphans: 3;
+    widows: 3;
+  }
+}
