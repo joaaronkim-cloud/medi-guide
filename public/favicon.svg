@@ -1,39 +1,40 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
   <!--
-    MediGuide.health — Guide Cross favicon
-    Design: teal M letterform (bucket with top V-notch) + medical cross + guiding path
+    MediGuide.health — Guide Cross favicon v2
+    Teal M with large-radius rounded arm tops, deep V-notch,
+    large medical cross, and wide perspective road.
   -->
 
-  <!-- M body: rounded bucket shape with V-notch cut from the top center -->
+  <!-- M body: connected bucket, large 20px arcs at outer arm tops, V-notch to y=50 -->
   <path
     fill="#5BA99A"
-    d="M 16,92
-       Q 7,92 7,84
-       L 7,17
-       Q 7,9 16,9
-       L 32,9
-       L 50,57
-       L 68,9
-       L 84,9
-       Q 93,9 93,17
-       L 93,84
-       Q 93,92 84,92
+    d="M 18,91
+       Q 10,91 10,83
+       L 10,29
+       A 20,20 0 0 1 30,9
+       L 34,9
+       L 50,50
+       L 66,9
+       L 70,9
+       A 20,20 0 0 1 90,29
+       L 90,83
+       Q 90,91 82,91
        Z"
   />
 
-  <!-- White medical cross — centered in the upper M body -->
-  <!-- Horizontal arm -->
-  <rect x="44" y="34.5" width="12" height="5" rx="1.5" fill="white"/>
-  <!-- Vertical arm -->
-  <rect x="47.5" y="31" width="5" height="12" rx="1.5" fill="white"/>
+  <!-- White medical cross — vertical arm top flush with V-notch bottom (y=50) -->
+  <!-- Horizontal bar -->
+  <rect x="39" y="56" width="22" height="8" rx="2" fill="white"/>
+  <!-- Vertical bar -->
+  <rect x="46" y="50" width="8" height="20" rx="2" fill="white"/>
 
-  <!-- White guiding path — S-curve road below the cross -->
+  <!-- White perspective road — wide S-curve fill, narrow at top, wide at bottom -->
   <path
-    d="M 49,51 C 70,55 70,68 50,72 C 38,75 62,82 70,90"
-    fill="none"
-    stroke="white"
-    stroke-width="5.5"
-    stroke-linecap="round"
-    stroke-linejoin="round"
+    fill="white"
+    d="M 44,73
+       C 52,78 22,84 20,91
+       L 65,91
+       C 66,85 68,79 56,73
+       Z"
   />
 </svg>
