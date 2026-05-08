@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { PrintSummary, type PrintBenefit } from "@/components/PrintSummary";
 
 export const metadata: Metadata = {
   title: "Hidden Benefits | MediGuide.health",
@@ -103,7 +104,7 @@ const benefitCards = [
     title: "Covered California Subsidies You May Be Overlooking",
     tag: "People who think they earn too much",
     description:
-      "Many Californians assume they earn too much to get help on Covered California, but subsidies are available to people earning up to 400% of the federal poverty level — about $58,320 per year for one person in 2024. Some people save hundreds of dollars per month without realizing they could.",
+      "Many Californians assume they earn too much to get help on Covered California. Federal Premium Tax Credits are available up to 400% of the federal poverty level — about $63,840 per year for a single person in 2026. Note: the enhanced federal subsidies that previously extended help above that income threshold expired at the end of 2025. California has a separate state subsidy program for lower incomes. Use the Covered California calculator to check your actual cost before assuming you can't afford coverage.",
     action:
       "Use the Covered California Shop and Compare tool at CoveredCA.com to see your actual estimated cost before assuming you can't afford marketplace coverage.",
     source: "Covered California",
@@ -112,9 +113,72 @@ const benefitCards = [
 
 const jumpLinks = benefitCards.map((card) => ({ label: card.title, href: `#${card.id}` }));
 
+const printBenefits: PrintBenefit[] = [
+  {
+    name: "Adult Medi-Cal Dental",
+    description: "Restored in 2022: cleanings, fillings, root canals, dentures, and more at no or low cost for Medi-Cal members.",
+    applyUrl: "benefitscal.com",
+    phone: "Denti-Cal: 1-800-322-6384",
+  },
+  {
+    name: "Medi-Cal Vision",
+    description: "Most Medi-Cal managed care plans cover one annual eye exam and one pair of eyeglasses. Many members don't know this exists.",
+    applyUrl: "Contact your Medi-Cal plan",
+  },
+  {
+    name: "IHSS (In-Home Care)",
+    description: "Medi-Cal members needing help with bathing, cooking, or cleaning can get a paid caregiver — even a family member — through IHSS.",
+    applyUrl: "Contact county IHSS office",
+  },
+  {
+    name: "Free Medical Rides (NEMT)",
+    description: "Medi-Cal covers free rides to doctor visits, dialysis, mental health appointments, and more. Call your plan 2–3 business days ahead.",
+    applyUrl: "Call your Medi-Cal managed care plan",
+  },
+  {
+    name: "Extra Help (Medicare Part D)",
+    description: "Federal program that can reduce Medicare drug costs to near zero — premiums, deductibles, and copays — for limited-income enrollees.",
+    applyUrl: "ssa.gov/medicare/part-d/extra-help",
+    phone: "1-800-772-1213",
+  },
+  {
+    name: "Medicare Savings Programs",
+    description: "QMB, SLMB, or QDWI can help pay Medicare Part B premiums, saving hundreds per year. Apply at your county Medi-Cal office.",
+    applyUrl: "benefitscal.com",
+    phone: "1-877-847-3663",
+  },
+  {
+    name: "CalFresh (Food Benefits)",
+    description: "Monthly EBT food benefits at most grocery stores. Many Medi-Cal households also qualify but haven't applied.",
+    applyUrl: "benefitscal.com",
+    phone: "1-877-847-3663",
+  },
+  {
+    name: "WIC",
+    description: "Free food benefits, nutrition counseling, and breastfeeding support for pregnant women, new mothers, and children under 5.",
+    applyUrl: "wic.ca.gov",
+    phone: "1-888-942-9675",
+  },
+  {
+    name: "988 Crisis Line",
+    description: "Free, confidential mental health and crisis support available 24/7 by call or text. No insurance required. English and Spanish.",
+    applyUrl: "988 (call or text)",
+  },
+  {
+    name: "Covered CA Subsidies",
+    description: "Premium Tax Credits available up to 400% FPL (~$63,840/yr single in 2026). Use Shop and Compare to see your real monthly cost.",
+    applyUrl: "coveredca.com/shop-and-compare",
+    phone: "1-800-300-1506",
+  },
+];
+
+const eligibilitySummary =
+  "These benefits are available to many Californians who already have Medi-Cal or Medicare — but are commonly overlooked. Confirm details directly with your plan or county office before applying.";
+
 export default function HiddenBenefitsPage() {
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(214,236,255,0.55),_transparent_34%),linear-gradient(180deg,_#f9fcff_0%,_#f7fbf8_52%,_#fffaf2_100%)]">
+    <>
+    <main className="print:hidden min-h-screen bg-[radial-gradient(circle_at_top,_rgba(214,236,255,0.55),_transparent_34%),linear-gradient(180deg,_#f9fcff_0%,_#f7fbf8_52%,_#fffaf2_100%)]">
       <div className="mx-auto max-w-6xl px-6 py-8 sm:px-8 sm:py-12">
         <header className="rounded-[2rem] border border-white/70 bg-white/92 p-6 shadow-card sm:p-10">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -172,9 +236,11 @@ export default function HiddenBenefitsPage() {
                 <p className="mt-2 text-lg leading-8 text-slate-700">{benefit.action}</p>
               </div>
 
-              <p className="mt-4 text-sm text-slate-500">
-                Source: {benefit.source}
-              </p>
+              <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1">
+                <p className="text-xs text-slate-400">Source: {benefit.source}</p>
+                <span className="text-xs text-slate-300" aria-hidden="true">·</span>
+                <p className="text-xs text-slate-400">Last reviewed: April 2026</p>
+              </div>
             </section>
           ))}
         </section>
@@ -210,5 +276,11 @@ export default function HiddenBenefitsPage() {
         </section>
       </div>
     </main>
+    <PrintSummary
+      pageTitle="Benefits Most Californians Don't Know They Have"
+      eligibilitySummary={eligibilitySummary}
+      benefits={printBenefits}
+    />
+    </>
   );
 }

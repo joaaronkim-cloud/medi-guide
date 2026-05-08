@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { PrintSummary, type PrintBenefit } from "@/components/PrintSummary";
 
 export const metadata: Metadata = {
   title: "By Situation | MediGuide.health",
@@ -97,7 +98,7 @@ const situations = [
       {
         name: "Full-Scope Medi-Cal for Adults",
         detail:
-          "As of January 2024, California expanded full-scope Medi-Cal to all income-eligible adults regardless of immigration status. You do not need legal residency to qualify.",
+          "California expanded full-scope Medi-Cal to all income-eligible adults regardless of immigration status in 2024. Important update: starting October 1, 2026, federal law is restricting federal funding for some undocumented adults. California has committed to continuing state-funded coverage for current enrollees, but scope may be more limited for some. If you are already enrolled, keeping your coverage active and renewing on time is critical.",
       },
       {
         name: "Medi-Cal for Children",
@@ -255,9 +256,69 @@ const situations = [
   },
 ] as const;
 
+const printBenefits: PrintBenefit[] = [
+  {
+    name: "Pregnant / New Baby",
+    description: "Medi-Cal covers pregnancy, delivery, and 60 days postpartum care. WIC provides free food and nutrition support.",
+    applyUrl: "benefitscal.com",
+    phone: "1-877-847-3663",
+  },
+  {
+    name: "Job Loss",
+    description: "60-day Covered California special enrollment period after losing employer coverage. Compare Medi-Cal, Covered CA, and COBRA before deciding.",
+    applyUrl: "coveredca.com/apply",
+    phone: "1-800-300-1506",
+  },
+  {
+    name: "Disability",
+    description: "Medi-Cal at higher income levels, IHSS for in-home care (including family caregivers), SSI for monthly cash, Regional Center for developmental disabilities.",
+    applyUrl: "benefitscal.com",
+    phone: "1-877-847-3663",
+  },
+  {
+    name: "Immigration",
+    description: "Emergency Medi-Cal available to all regardless of status. If already enrolled in full-scope Medi-Cal, renew on time — federal rules are changing in Oct 2026.",
+    applyUrl: "benefitscal.com",
+    phone: "1-877-847-3663",
+  },
+  {
+    name: "Veterans",
+    description: "Apply for VA health care at VA.gov. CalVet can help navigate California and federal benefits. VA and Medi-Cal can be used together.",
+    applyUrl: "va.gov/health-care/apply-for-health-care-form-10-10ez/",
+    phone: "VA: 1-800-827-1000 · CalVet: 1-844-SERV-CAL",
+  },
+  {
+    name: "Homelessness",
+    description: "No permanent address needed for Medi-Cal — use a shelter, social services office, or P.O. box address. Visit a county office or FQHC for help enrolling.",
+    applyUrl: "benefitscal.com",
+    phone: "1-877-847-3663",
+  },
+  {
+    name: "Recovery",
+    description: "Medi-Cal covers a full SUD treatment continuum including MAT. Contact county Behavioral Health for treatment connection after enrolling.",
+    applyUrl: "benefitscal.com",
+    phone: "988 (crisis line, 24/7)",
+  },
+  {
+    name: "Domestic Violence",
+    description: "National DV Hotline for immediate safety planning and local shelter referrals. Medi-Cal using shelter/P.O. box address. Safe at Home for address confidentiality.",
+    applyUrl: "thehotline.org",
+    phone: "1-800-799-7233 (24/7)",
+  },
+  {
+    name: "Tribal Members",
+    description: "Indian Health Service and tribal health clinics for primary care. Medi-Cal can supplement IHS. Covered CA allows tribal member year-round enrollment.",
+    applyUrl: "Contact tribal health program or local IHS",
+  },
+];
+
+const eligibilitySummary =
+  "California residents seeking coverage based on their life situation. Each program on this list applies to the situation shown. Confirm eligibility and current details directly with each program before applying.";
+
 export default function BySituationPage() {
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(214,236,255,0.55),_transparent_34%),linear-gradient(180deg,_#f9fcff_0%,_#f7fbf8_52%,_#fffaf2_100%)]">
+    <>
+    <main className="print:hidden min-h-screen bg-[radial-gradient(circle_at_top,_rgba(214,236,255,0.55),_transparent_34%),linear-gradient(180deg,_#f9fcff_0%,_#f7fbf8_52%,_#fffaf2_100%)]">
       <div className="mx-auto max-w-6xl px-6 py-8 sm:px-8 sm:py-12">
         <header className="rounded-[2rem] border border-white/70 bg-white/92 p-6 shadow-card sm:p-10">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -327,6 +388,8 @@ export default function BySituationPage() {
                 <p className="text-base font-semibold text-emerald-900">Next step:</p>
                 <p className="mt-1 text-base leading-7 text-emerald-900">{situation.action}</p>
               </div>
+
+              <p className="mt-4 text-xs text-slate-400">Last reviewed: April 2026</p>
             </section>
           ))}
         </section>
@@ -361,5 +424,11 @@ export default function BySituationPage() {
         </section>
       </div>
     </main>
+    <PrintSummary
+      pageTitle="Find Help by Your Situation"
+      eligibilitySummary={eligibilitySummary}
+      benefits={printBenefits}
+    />
+    </>
   );
 }

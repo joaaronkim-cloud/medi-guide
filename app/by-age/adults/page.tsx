@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { PrintSummary, type PrintBenefit } from "@/components/PrintSummary";
 
 export const metadata: Metadata = {
   title: "Adults (30-64) | MediGuide.health",
@@ -76,6 +77,47 @@ const benefitCards = [
   },
 ] as const;
 
+const printBenefits: PrintBenefit[] = [
+  {
+    name: "Medi-Cal",
+    description: "Free or low-cost coverage for low-income adults 19–64. Includes medical, dental, vision, and behavioral health.",
+    applyUrl: "benefitscal.com",
+    phone: "1-877-847-3663",
+  },
+  {
+    name: "Covered California",
+    description: "Subsidized marketplace plans. Silver plans often offer the best value with income-based cost-sharing savings.",
+    applyUrl: "coveredca.com/apply",
+    phone: "1-800-300-1506",
+  },
+  {
+    name: "COBRA",
+    description: "Continue your employer's plan up to 18 months after job loss. You pay the full premium — compare to Medi-Cal and Covered CA first.",
+    applyUrl: "Contact your HR/plan administrator",
+  },
+  {
+    name: "Coverage Just Above Medi-Cal",
+    description: "If income is just above Medi-Cal limits, Covered California subsidies and Silver cost-sharing reductions may still make coverage affordable.",
+    applyUrl: "coveredca.com/apply",
+    phone: "1-800-300-1506",
+  },
+  {
+    name: "Self-Employed Coverage",
+    description: "Freelancers and contractors can use Covered California subsidies based on estimated net annual income. Update when income changes.",
+    applyUrl: "coveredca.com/apply",
+    phone: "1-800-300-1506",
+  },
+  {
+    name: "Adult Dental (Medi-Cal)",
+    description: "Comprehensive dental restored in 2022: cleanings, fillings, root canals, dentures, and more at no or low cost for Medi-Cal members.",
+    applyUrl: "benefitscal.com",
+    phone: "Denti-Cal: 1-800-322-6384",
+  },
+];
+
+const eligibilitySummary =
+  "California adults ages 30–64. Depending on income, you may qualify for free Medi-Cal, subsidized Covered California plans, or COBRA continuation if you recently lost employer coverage. Rules and income limits change — confirm eligibility directly with each program.";
+
 const relatedLinks = [
   {
     title: "Find My Benefits",
@@ -150,13 +192,16 @@ function BenefitCard({
           Learn how to apply &rarr;
         </Link>
       </div>
+
+      <p className="mt-5 text-xs text-slate-400">Last reviewed: April 2026</p>
     </section>
   );
 }
 
 export default function AdultsAgePage() {
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(214,236,255,0.55),_transparent_34%),linear-gradient(180deg,_#f9fcff_0%,_#f7fbf8_52%,_#fffaf2_100%)]">
+    <>
+    <main className="print:hidden min-h-screen bg-[radial-gradient(circle_at_top,_rgba(214,236,255,0.55),_transparent_34%),linear-gradient(180deg,_#f9fcff_0%,_#f7fbf8_52%,_#fffaf2_100%)]">
       <div className="mx-auto max-w-6xl px-6 py-8 sm:px-8 sm:py-12">
         <header className="rounded-[2rem] border border-white/70 bg-white/92 p-6 shadow-card sm:p-10">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -254,5 +299,11 @@ export default function AdultsAgePage() {
         </section>
       </div>
     </main>
+    <PrintSummary
+      pageTitle="Health Benefits for Adults (30–64)"
+      eligibilitySummary={eligibilitySummary}
+      benefits={printBenefits}
+    />
+    </>
   );
 }

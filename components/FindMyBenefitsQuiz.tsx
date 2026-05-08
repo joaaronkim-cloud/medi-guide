@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { PrintSummary, type PrintBenefit } from "@/components/PrintSummary";
 
 type AgeAnswer = "under-18" | "18-29" | "30-64" | "65-plus";
 type NeedAnswer =
@@ -300,6 +301,56 @@ function getQuizResults({
   return cards.slice(0, 5);
 }
 
+const AGE_LABELS: Record<AgeAnswer, string> = {
+  "under-18": "under 18",
+  "18-29": "18–29",
+  "30-64": "30–64",
+  "65-plus": "65 or older",
+};
+
+const SITUATION_LABELS: Record<SituationAnswer, string> = {
+  "no-insurance": "no health insurance",
+  "lost-job": "recently lost a job",
+  "pregnant-new-baby": "pregnant or a new parent",
+  disability: "living with a disability",
+  immigration: "undocumented or mixed-status household",
+  veteran: "a veteran or active-duty family member",
+  homelessness: "experiencing homelessness or unstable housing",
+  "on-medi-cal": "currently on Medi-Cal",
+  none: "no specific situation listed",
+};
+
+const NEED_LABELS: Record<NeedAnswer, string> = {
+  coverage: "finding health coverage",
+  "mental-health": "mental health support",
+  "dental-vision": "dental or vision help",
+  "prescription-costs": "lowering prescription costs",
+  "not-sure": "not sure yet",
+};
+
+function buildEligibilitySummary(
+  age: AgeAnswer,
+  situations: SituationAnswer[],
+  need: NeedAnswer
+): string {
+  const situationText =
+    situations.length === 1 && situations[0] === "none"
+      ? ""
+      : situations
+          .filter((s) => s !== "none")
+          .map((s) => SITUATION_LABELS[s])
+          .join(", ");
+
+  const parts = [`Age: ${AGE_LABELS[age]}`];
+  if (situationText) parts.push(`Situation: ${situationText}`);
+  parts.push(`Primary need: ${NEED_LABELS[need]}`);
+
+  return (
+    parts.join(" · ") +
+    ". These are starting points only — actual eligibility depends on income and household. Confirm with each program before applying."
+  );
+}
+
 function OptionButton({
   label,
   selected,
@@ -393,8 +444,25 @@ export function FindMyBenefitsQuiz() {
     setStepIndex(0);
   }
 
+  const printBenefits: PrintBenefit[] = isResultsStep
+    ? results.map((r) => ({
+        name: r.title,
+        description: r.description,
+        applyUrl: r.applyHref ?? "mediguide.health/help",
+        phone: r.applyLabel !== "Apply on BenefitsCal" && r.applyLabel !== "Apply on Covered CA"
+          ? r.applyLabel
+          : undefined,
+      }))
+    : [];
+
+  const eligibilitySummary =
+    isResultsStep && age && need
+      ? buildEligibilitySummary(age, situations, need)
+      : "";
+
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(214,236,255,0.55),_transparent_34%),linear-gradient(180deg,_#f9fcff_0%,_#f7fbf8_52%,_#fffaf2_100%)]">
+    <>
+    <div className="print:hidden min-h-screen bg-[radial-gradient(circle_at_top,_rgba(214,236,255,0.55),_transparent_34%),linear-gradient(180deg,_#f9fcff_0%,_#f7fbf8_52%,_#fffaf2_100%)]">
       <main className="mx-auto max-w-5xl px-6 py-8 sm:px-8 sm:py-12">
         <header className="rounded-[2rem] border border-white/70 bg-white/92 p-6 shadow-card sm:p-10">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -587,5 +655,13 @@ export function FindMyBenefitsQuiz() {
         </section>
       </main>
     </div>
+    {isResultsStep && age && need && printBenefits.length > 0 && (
+      <PrintSummary
+        pageTitle="Your Personalized Benefits Summary"
+        eligibilitySummary={eligibilitySummary}
+        benefits={printBenefits}
+      />
+    )}
+    </>
   );
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { PrintSummary, type PrintBenefit } from "@/components/PrintSummary";
 
 export const metadata: Metadata = {
   title: "Seniors (65+) | MediGuide.health",
@@ -52,6 +53,7 @@ const benefitCards = [
       "Medicare usually pays first, and Medi-Cal can help with premiums, deductibles, and copays.",
       "Medi-Cal can also help cover some services Medicare does not fully cover.",
       "This can be one of the strongest benefit combinations in California for people with modest income.",
+      "As of January 2026, Non-MAGI Medi-Cal pathways used by most seniors have reinstated asset limits — up to $130,000 in assets is generally allowed for one person. Savings in certain accounts may be exempt.",
     ],
     action:
       "Apply for Medi-Cal or at least a Medicare Savings Program if your income is modest.",
@@ -81,6 +83,47 @@ const benefitCards = [
       "Apply if your income is very low instead of assuming SSI is only for disability.",
   },
 ] as const;
+
+const printBenefits: PrintBenefit[] = [
+  {
+    name: "Medicare Parts A & B",
+    description: "Part A: hospital care. Part B: doctor visits and outpatient. Sign up at 65 — missing the window can mean lifetime premium penalties.",
+    applyUrl: "ssa.gov/medicare/sign-up",
+    phone: "1-800-772-1213",
+  },
+  {
+    name: "Medicare Part D",
+    description: "Prescription drug coverage. Enter your exact medications into Plan Compare before choosing — costs vary widely by drug list.",
+    applyUrl: "medicare.gov/plan-compare",
+    phone: "1-800-633-4227",
+  },
+  {
+    name: "Medicare Advantage",
+    description: "Private plans bundling hospital, doctor, often drugs, and extras like dental/vision. Verify your doctors are in-network before enrolling.",
+    applyUrl: "medicare.gov/plan-compare",
+    phone: "1-800-633-4227",
+  },
+  {
+    name: "Medicare + Medi-Cal",
+    description: "Medi-Cal can help pay Medicare premiums, deductibles, and copays for low-income seniors. Apply even if denied before — rules changed.",
+    applyUrl: "benefitscal.com",
+    phone: "1-877-847-3663",
+  },
+  {
+    name: "PACE",
+    description: "All-in-one care program for adults 55+ with nursing-home-level needs who can still live in the community. Availability varies by ZIP code.",
+    applyUrl: "pace4you.org",
+  },
+  {
+    name: "SSI for Seniors",
+    description: "Monthly cash payments for very-low-income seniors. California SSI is higher than the federal base; often brings Medi-Cal automatically.",
+    applyUrl: "ssa.gov/benefits/ssi",
+    phone: "1-800-772-1213",
+  },
+];
+
+const eligibilitySummary =
+  "California adults 65 and older. Most qualify for Medicare Parts A and B at 65. Low-income seniors may also qualify for Medi-Cal, Medicare Savings Programs, or Extra Help for prescriptions — dramatically reducing out-of-pocket costs.";
 
 const relatedLinks = [
   {
@@ -156,13 +199,16 @@ function BenefitCard({
           Learn how to apply &rarr;
         </Link>
       </div>
+
+      <p className="mt-5 text-xs text-slate-400">Last reviewed: April 2026</p>
     </section>
   );
 }
 
 export default function SeniorsAgePage() {
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(214,236,255,0.55),_transparent_34%),linear-gradient(180deg,_#f9fcff_0%,_#f7fbf8_52%,_#fffaf2_100%)]">
+    <>
+    <main className="print:hidden min-h-screen bg-[radial-gradient(circle_at_top,_rgba(214,236,255,0.55),_transparent_34%),linear-gradient(180deg,_#f9fcff_0%,_#f7fbf8_52%,_#fffaf2_100%)]">
       <div className="mx-auto max-w-6xl px-6 py-8 sm:px-8 sm:py-12">
         <header className="rounded-[2rem] border border-white/70 bg-white/92 p-6 shadow-card sm:p-10">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -254,5 +300,11 @@ export default function SeniorsAgePage() {
         </section>
       </div>
     </main>
+    <PrintSummary
+      pageTitle="Health Benefits for Seniors (65+)"
+      eligibilitySummary={eligibilitySummary}
+      benefits={printBenefits}
+    />
+    </>
   );
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { PrintSummary, type PrintBenefit } from "@/components/PrintSummary";
 
 export const metadata: Metadata = {
   title: "Kids and Teens (0-17) | MediGuide.health",
@@ -105,6 +106,58 @@ const benefitCards = [
   },
 ] as const;
 
+const printBenefits: PrintBenefit[] = [
+  {
+    name: "Medi-Cal for Kids",
+    description: "Broad coverage for children under 19, including those without immigration status. Covers medical, dental, vision, and mental health. Income limits much higher than for adults.",
+    applyUrl: "benefitscal.com",
+    phone: "1-877-847-3663",
+  },
+  {
+    name: "CHIP / CCHIP",
+    description: "Children in SF, San Mateo, and Santa Clara counties above regular Medi-Cal income may still qualify for low-cost subsidized coverage.",
+    applyUrl: "benefitscal.com",
+    phone: "1-877-847-3663",
+  },
+  {
+    name: "Covered CA for Children",
+    description: "Marketplace coverage for kids whose families earn too much for Medi-Cal. Includes pediatric dental and vision. Compare before buying off-marketplace.",
+    applyUrl: "coveredca.com/apply",
+    phone: "1-800-300-1506",
+  },
+  {
+    name: "Children's Dental & Vision",
+    description: "Free or very low-cost cleanings, fillings, eye exams, and glasses for children on Medi-Cal or Covered California family plans.",
+    applyUrl: "benefitscal.com",
+    phone: "1-877-847-3663",
+  },
+  {
+    name: "Newborn Coverage",
+    description: "Newborns have automatic coverage at birth. Report to your plan within 30 days — do not assume the hospital completed enrollment for you.",
+    applyUrl: "benefitscal.com",
+    phone: "1-877-847-3663",
+  },
+  {
+    name: "Foster Youth",
+    description: "Children in foster care get Medi-Cal while in care. Former foster youth often keep Medi-Cal until age 26 regardless of income.",
+    applyUrl: "Contact county social services",
+  },
+  {
+    name: "Special-Needs Supports",
+    description: "Waiver Medi-Cal, Regional Center services, and California Children's Services can be combined. Apply to all three at once — do not wait.",
+    applyUrl: "benefitscal.com",
+    phone: "1-877-847-3663",
+  },
+  {
+    name: "School-Based Services",
+    description: "Public schools may provide free mental health, speech, nursing, and screening services. Ask the school in writing what is available.",
+    applyUrl: "Contact your school district",
+  },
+];
+
+const eligibilitySummary =
+  "California children and teens ages 0–17. Medi-Cal covers children at much higher income levels than adults and regardless of immigration status. Most coverage is free or very low cost. Apply even if you think your family earns too much.";
+
 const relatedLinks = [
   {
     title: "Find My Benefits",
@@ -165,13 +218,16 @@ function BenefitCard({
           Learn how to apply &rarr;
         </Link>
       </div>
+
+      <p className="mt-5 text-xs text-slate-400">Last reviewed: April 2026</p>
     </section>
   );
 }
 
 export default function KidsTeensPage() {
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(214,236,255,0.55),_transparent_34%),linear-gradient(180deg,_#f9fcff_0%,_#f7fbf8_52%,_#fffaf2_100%)]">
+    <>
+    <main className="print:hidden min-h-screen bg-[radial-gradient(circle_at_top,_rgba(214,236,255,0.55),_transparent_34%),linear-gradient(180deg,_#f9fcff_0%,_#f7fbf8_52%,_#fffaf2_100%)]">
       <div className="mx-auto max-w-6xl px-6 py-8 sm:px-8 sm:py-12">
         <header className="rounded-[2rem] border border-white/70 bg-white/92 p-6 shadow-card sm:p-10">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -250,5 +306,11 @@ export default function KidsTeensPage() {
         </section>
       </div>
     </main>
+    <PrintSummary
+      pageTitle="Health Benefits for Kids and Teens (0–17)"
+      eligibilitySummary={eligibilitySummary}
+      benefits={printBenefits}
+    />
+    </>
   );
 }

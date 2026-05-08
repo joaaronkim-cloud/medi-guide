@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { PrintSummary, type PrintBenefit } from "@/components/PrintSummary";
 
 export const metadata: Metadata = {
   title: "Young Adults (18-29) | MediGuide.health",
@@ -93,6 +94,53 @@ const benefitCards = [
   },
 ] as const;
 
+const printBenefits: PrintBenefit[] = [
+  {
+    name: "Parent's Plan (Until 26)",
+    description: "Stay on a parent's employer plan until age 26 — even if married, not in school, or living away. Plan 60 days ahead for what comes next.",
+    applyUrl: "Contact parent's employer/HR",
+  },
+  {
+    name: "Medi-Cal",
+    description: "Free or low-cost coverage for income-qualifying adults 19–64. Covers medical, dental, vision, and mental health. Many qualify without realizing it.",
+    applyUrl: "benefitscal.com",
+    phone: "1-877-847-3663",
+  },
+  {
+    name: "Covered California",
+    description: "Subsidized marketplace plans. Under-30 catastrophic plans available. Compare total yearly cost, not just the monthly premium.",
+    applyUrl: "coveredca.com/apply",
+    phone: "1-800-300-1506",
+  },
+  {
+    name: "Student Coverage",
+    description: "Campus plans are convenient; Medi-Cal may be cheaper if providers are nearby. Compare both before waiving campus coverage each semester.",
+    applyUrl: "benefitscal.com",
+    phone: "1-877-847-3663",
+  },
+  {
+    name: "Family PACT",
+    description: "Free birth control, STI testing, and reproductive health care for income-qualifying Californians regardless of coverage status.",
+    applyUrl: "familypact.org",
+    phone: "1-800-942-1054",
+  },
+  {
+    name: "Gig / Freelance",
+    description: "Use Covered California subsidies based on estimated annual net income. Update income estimate when work changes to avoid owing money back.",
+    applyUrl: "coveredca.com/apply",
+    phone: "1-800-300-1506",
+  },
+  {
+    name: "Undocumented",
+    description: "Emergency Medi-Cal available to all regardless of status. If already enrolled in full-scope Medi-Cal, renew on time to protect coverage.",
+    applyUrl: "benefitscal.com",
+    phone: "1-877-847-3663",
+  },
+];
+
+const eligibilitySummary =
+  "California young adults ages 18–29. You may qualify for free Medi-Cal, subsidized Covered California plans, or stay on a parent's plan until age 26. Some programs are available regardless of immigration status.";
+
 const relatedLinks = [
   {
     title: "Find My Benefits",
@@ -170,13 +218,16 @@ function BenefitCard({
           Learn how to apply &rarr;
         </Link>
       </div>
+
+      <p className="mt-5 text-xs text-slate-400">Last reviewed: April 2026</p>
     </section>
   );
 }
 
 export default function YoungAdultsPage() {
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(214,236,255,0.55),_transparent_34%),linear-gradient(180deg,_#f9fcff_0%,_#f7fbf8_52%,_#fffaf2_100%)]">
+    <>
+    <main className="print:hidden min-h-screen bg-[radial-gradient(circle_at_top,_rgba(214,236,255,0.55),_transparent_34%),linear-gradient(180deg,_#f9fcff_0%,_#f7fbf8_52%,_#fffaf2_100%)]">
       <div className="mx-auto max-w-6xl px-6 py-8 sm:px-8 sm:py-12">
         <header className="rounded-[2rem] border border-white/70 bg-white/92 p-6 shadow-card sm:p-10">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -278,5 +329,11 @@ export default function YoungAdultsPage() {
         </section>
       </div>
     </main>
+    <PrintSummary
+      pageTitle="Health Benefits for Young Adults (18–29)"
+      eligibilitySummary={eligibilitySummary}
+      benefits={printBenefits}
+    />
+    </>
   );
 }
