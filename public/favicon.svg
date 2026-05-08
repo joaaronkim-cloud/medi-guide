@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!--
+    MediGuide.health — Guide Cross favicon
+    Design: teal M letterform (bucket with top V-notch) + medical cross + guiding path
+  -->
+
+  <!-- M body: rounded bucket shape with V-notch cut from the top center -->
+  <path
+    fill="#5BA99A"
+    d="M 16,92
+       Q 7,92 7,84
+       L 7,17
+       Q 7,9 16,9
+       L 32,9
+       L 50,57
+       L 68,9
+       L 84,9
+       Q 93,9 93,17
+       L 93,84
+       Q 93,92 84,92
+       Z"
+  />
+
+  <!-- White medical cross — centered in the upper M body -->
+  <!-- Horizontal arm -->
+  <rect x="44" y="34.5" width="12" height="5" rx="1.5" fill="white"/>
+  <!-- Vertical arm -->
+  <rect x="47.5" y="31" width="5" height="12" rx="1.5" fill="white"/>
+
+  <!-- White guiding path — S-curve road below the cross -->
+  <path
+    d="M 49,51 C 70,55 70,68 50,72 C 38,75 62,82 70,90"
+    fill="none"
+    stroke="white"
+    stroke-width="5.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+</svg>
