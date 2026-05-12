@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { PrintSummary, type PrintBenefit } from "@/components/PrintSummary";
 
 type AgeAnswer = "under-18" | "18-29" | "30-64" | "65-plus";
+type IncomeAnswer = "under-20k" | "20k-40k" | "40k-70k" | "over-70k";
 type NeedAnswer =
   | "coverage"
   | "mental-health"
@@ -31,7 +32,7 @@ type ResultCard = {
   applyLabel?: string;
 };
 
-const QUESTION_COUNT = 3;
+const QUESTION_COUNT = 4;
 
 const AGE_OPTIONS: Array<{ label: string; value: AgeAnswer }> = [
   { label: "Under 18", value: "under-18" },
@@ -58,6 +59,13 @@ const NEED_OPTIONS: Array<{ label: string; value: NeedAnswer }> = [
   { label: "Dental or vision", value: "dental-vision" },
   { label: "Prescription costs", value: "prescription-costs" },
   { label: "I don't know yet", value: "not-sure" },
+] as const;
+
+const INCOME_OPTIONS: Array<{ label: string; value: IncomeAnswer }> = [
+  { label: "Under $20k", value: "under-20k" },
+  { label: "$20k – $40k", value: "20k-40k" },
+  { label: "$40k – $70k", value: "40k-70k" },
+  { label: "Over $70k", value: "over-70k" },
 ] as const;
 
 const AGE_RESULTS: Record<AgeAnswer, ResultCard> = {
@@ -96,6 +104,48 @@ const AGE_RESULTS: Record<AgeAnswer, ResultCard> = {
 };
 
 const EXTRA_RESULTS: Record<string, ResultCard> = {
+  // ── Income-driven cards (new in v1.5) ─────────────────────────────────
+  //
+  // mediCalIncome: shown for working-age adults with income under $20k.
+  // The 2026 Medi-Cal income limit for a single adult is ~$22,000 (138% FPL).
+  mediCalIncome: {
+    key: "medi-cal-income",
+    title: "Medi-Cal — Free Coverage You Likely Qualify For",
+    description:
+      "At this income level, you are likely eligible for Medi-Cal, California's free or very low-cost health coverage. For a single adult in 2026, the income limit is approximately $22,000/year (138% of the federal poverty level). There's no cost to apply — apply at BenefitsCal.com and let the system confirm your eligibility.",
+    href: "/by-age/adults",
+    applyHref: "https://benefitscal.com/ApplyForBenefits/begin/ABOVR?lang=en",
+    applyLabel: "Apply on BenefitsCal",
+  },
+
+  // coveredCaSubsidy: shown for working-age adults with income $20k–$70k.
+  // Federal Premium Tax Credits and California state subsidies apply up to
+  // 400% FPL (~$63,840/year for a single adult in 2026).
+  coveredCaSubsidy: {
+    key: "covered-ca-subsidy",
+    title: "Covered California — Subsidies Are Likely Available",
+    description:
+      "At your income level, federal Premium Tax Credits and California state subsidies can significantly lower your monthly Covered California premium. Many people at this income range pay much less than the sticker price. Use the Shop and Compare tool to see your actual estimated cost before ruling coverage out.",
+    href: "/by-age/adults",
+    applyHref: "https://www.coveredca.com/apply/",
+    applyLabel: "Apply on Covered CA",
+  },
+
+  // coveredCaCliff: shown for working-age adults with income over $70k.
+  // In 2026, federal subsidies (Premium Tax Credits) end at 400% FPL
+  // (~$63,840/year for a single person). Families may still qualify at
+  // higher incomes due to higher FPL thresholds.
+  coveredCaCliff: {
+    key: "covered-ca-cliff",
+    title: "Covered California — Know the 2026 Subsidy Limit",
+    description:
+      "In 2026, federal premium subsidies (Premium Tax Credits) are generally no longer available for single adults earning above approximately $63,840/year (400% of the federal poverty level). Larger households may still qualify at higher incomes. Unsubsidized Covered California plans are still an option — use the Shop and Compare tool to review full-price marketplace plans and verify whether any California state assistance applies to your household.",
+    href: "/by-age/adults",
+    applyHref: "https://www.coveredca.com/shop-and-compare/",
+    applyLabel: "Compare Plans on Covered CA",
+  },
+
+  // ── Existing cards (unchanged) ────────────────────────────────────────
   howToApply: {
     key: "how-to-apply",
     title: "How to Apply",
@@ -202,14 +252,29 @@ const EXTRA_RESULTS: Record<string, ResultCard> = {
   },
 };
 
+// ── Result-card assembly ───────────────────────────────────────────────────
+//
+// Income routing rules (2026 California):
+//   under-20k  → Medi-Cal (138% FPL for a single adult ≈ $22k)
+//   20k–40k    → Covered California with federal + state subsidies
+//   40k–70k    → Covered California with federal subsidies (up to 400% FPL ≈ $63.8k)
+//   over-70k   → Covered California, no federal subsidy for most single adults;
+//                highlight the 2026 subsidy cliff
+//
+// Income routing is applied only for working-age adults (18-29, 30-64).
+// Seniors (65+) and children (under-18) are handled by their age cards,
+// which already address the relevant income-related programs.
+
 function getQuizResults({
   age,
   situations,
   need,
+  income,
 }: {
   age: AgeAnswer;
   situations: SituationAnswer[];
   need: NeedAnswer;
+  income: IncomeAnswer | null;
 }) {
   const cards: ResultCard[] = [];
   const seen = new Set<string>();
@@ -218,13 +283,32 @@ function getQuizResults({
     if (seen.has(card.key) || cards.length >= 5) {
       return;
     }
-
     seen.add(card.key);
     cards.push(card);
   }
 
+  // 1. Age-based starter (always first)
   addCard(AGE_RESULTS[age]);
 
+  // 2. Income-driven routing for working-age adults (inserted right after the
+  //    age card so it appears at the top of results with high prominence)
+  const isWorkingAge = age === "18-29" || age === "30-64";
+  if (income && isWorkingAge) {
+    if (income === "under-20k") {
+      // Strong Medi-Cal route
+      addCard(EXTRA_RESULTS.mediCalIncome);
+    } else if (income === "20k-40k" || income === "40k-70k") {
+      // Covered California with subsidies
+      addCard(EXTRA_RESULTS.coveredCaSubsidy);
+    } else if (income === "over-70k") {
+      // Covered California; note the 2026 subsidy cliff for single adults
+      // (mediCalIncome is intentionally NOT added here — Medi-Cal is
+      //  income-filtered out for this bracket)
+      addCard(EXTRA_RESULTS.coveredCaCliff);
+    }
+  }
+
+  // 3. Situation-based cards (unchanged logic)
   if (situations.includes("no-insurance")) {
     addCard(EXTRA_RESULTS.howToApply);
   }
@@ -257,6 +341,7 @@ function getQuizResults({
     addCard(EXTRA_RESULTS.currentMediCal);
   }
 
+  // 4. Need-based cards (unchanged logic)
   if (need === "coverage") {
     addCard(EXTRA_RESULTS.howToApply);
   }
@@ -277,7 +362,6 @@ function getQuizResults({
     if (age === "65-plus") {
       addCard(AGE_RESULTS["65-plus"]);
     }
-
     addCard(EXTRA_RESULTS.prescription);
   }
 
@@ -286,6 +370,7 @@ function getQuizResults({
     addCard(EXTRA_RESULTS.howToApply);
   }
 
+  // 5. Backfill to ensure at least 3 cards
   if (cards.length < 3) {
     addCard(EXTRA_RESULTS.hiddenBenefits);
   }
@@ -301,11 +386,20 @@ function getQuizResults({
   return cards.slice(0, 5);
 }
 
+// ── Label maps (for print summary) ────────────────────────────────────────
+
 const AGE_LABELS: Record<AgeAnswer, string> = {
   "under-18": "under 18",
   "18-29": "18–29",
   "30-64": "30–64",
   "65-plus": "65 or older",
+};
+
+const INCOME_LABELS: Record<IncomeAnswer, string> = {
+  "under-20k": "under $20,000/year",
+  "20k-40k": "$20,000–$40,000/year",
+  "40k-70k": "$40,000–$70,000/year",
+  "over-70k": "over $70,000/year",
 };
 
 const SITUATION_LABELS: Record<SituationAnswer, string> = {
@@ -331,7 +425,8 @@ const NEED_LABELS: Record<NeedAnswer, string> = {
 function buildEligibilitySummary(
   age: AgeAnswer,
   situations: SituationAnswer[],
-  need: NeedAnswer
+  need: NeedAnswer,
+  income: IncomeAnswer | null,
 ): string {
   const situationText =
     situations.length === 1 && situations[0] === "none"
@@ -342,14 +437,17 @@ function buildEligibilitySummary(
           .join(", ");
 
   const parts = [`Age: ${AGE_LABELS[age]}`];
+  if (income) parts.push(`Household income: ${INCOME_LABELS[income]}`);
   if (situationText) parts.push(`Situation: ${situationText}`);
   parts.push(`Primary need: ${NEED_LABELS[need]}`);
 
   return (
     parts.join(" · ") +
-    ". These are starting points only — actual eligibility depends on income and household. Confirm with each program before applying."
+    ". These are starting points only — actual eligibility depends on income and household size. Confirm with each program before applying."
   );
 }
+
+// ── Shared button component ────────────────────────────────────────────────
 
 function OptionButton({
   label,
@@ -376,11 +474,14 @@ function OptionButton({
   );
 }
 
+// ── Quiz component ─────────────────────────────────────────────────────────
+
 export function FindMyBenefitsQuiz() {
   const [stepIndex, setStepIndex] = useState(0);
   const [age, setAge] = useState<AgeAnswer | null>(null);
   const [situations, setSituations] = useState<SituationAnswer[]>([]);
   const [need, setNeed] = useState<NeedAnswer | null>(null);
+  const [income, setIncome] = useState<IncomeAnswer | null>(null);
 
   const isResultsStep = stepIndex >= QUESTION_COUNT;
   const progress = Math.round(((Math.min(stepIndex, QUESTION_COUNT - 1) + 1) / QUESTION_COUNT) * 100);
@@ -389,47 +490,32 @@ export function FindMyBenefitsQuiz() {
     if (!age || !need || situations.length === 0) {
       return [];
     }
-
-    return getQuizResults({ age, situations, need });
-  }, [age, situations, need]);
+    return getQuizResults({ age, situations, need, income });
+  }, [age, situations, need, income]);
 
   function toggleSituation(value: SituationAnswer) {
     setSituations((current) => {
       if (value === "none") {
         return ["none"];
       }
-
       const withoutNone = current.filter((item) => item !== "none");
-
       if (withoutNone.includes(value)) {
         return withoutNone.filter((item) => item !== value);
       }
-
       return [...withoutNone, value];
     });
   }
 
   function canGoNext() {
-    if (stepIndex === 0) {
-      return age !== null;
-    }
-
-    if (stepIndex === 1) {
-      return situations.length > 0;
-    }
-
-    if (stepIndex === 2) {
-      return need !== null;
-    }
-
+    if (stepIndex === 0) return age !== null;
+    if (stepIndex === 1) return situations.length > 0;
+    if (stepIndex === 2) return need !== null;
+    if (stepIndex === 3) return income !== null;
     return true;
   }
 
   function goNext() {
-    if (!canGoNext()) {
-      return;
-    }
-
+    if (!canGoNext()) return;
     setStepIndex((current) => Math.min(current + 1, QUESTION_COUNT));
   }
 
@@ -441,6 +527,7 @@ export function FindMyBenefitsQuiz() {
     setAge(null);
     setSituations([]);
     setNeed(null);
+    setIncome(null);
     setStepIndex(0);
   }
 
@@ -449,15 +536,16 @@ export function FindMyBenefitsQuiz() {
         name: r.title,
         description: r.description,
         applyUrl: r.applyHref ?? "mediguide.health/help",
-        phone: r.applyLabel !== "Apply on BenefitsCal" && r.applyLabel !== "Apply on Covered CA"
-          ? r.applyLabel
-          : undefined,
+        phone:
+          r.applyLabel !== "Apply on BenefitsCal" && r.applyLabel !== "Apply on Covered CA"
+            ? r.applyLabel
+            : undefined,
       }))
     : [];
 
   const eligibilitySummary =
     isResultsStep && age && need
-      ? buildEligibilitySummary(age, situations, need)
+      ? buildEligibilitySummary(age, situations, need, income)
       : "";
 
   return (
@@ -482,10 +570,10 @@ export function FindMyBenefitsQuiz() {
           </div>
 
           <p className="mt-5 max-w-3xl text-lg leading-8 text-slate-700 sm:text-xl">
-            Based on your answers, we'll show you the California health programs most likely to help your situation.
+            Based on your answers, we&apos;ll show you the California health programs most likely to help your situation.
           </p>
           <p className="mt-3 max-w-3xl text-base leading-7 text-slate-600 sm:text-lg">
-            Three quick questions. No account. Nothing saved.
+            Four quick questions. No account. Nothing saved.
           </p>
         </header>
 
@@ -493,7 +581,7 @@ export function FindMyBenefitsQuiz() {
           {!isResultsStep ? (
             <>
               <div className="flex items-center justify-between gap-4 text-sm font-semibold text-slate-500">
-                <span>Question {stepIndex + 1} of 3</span>
+                <span>Question {stepIndex + 1} of {QUESTION_COUNT}</span>
                 <span>{progress}%</span>
               </div>
 
@@ -504,6 +592,7 @@ export function FindMyBenefitsQuiz() {
                 />
               </div>
 
+              {/* Step 0 — Age */}
               {stepIndex === 0 ? (
                 <div className="mt-8">
                   <h2 className="text-3xl font-bold tracking-tight text-ink">How old are you?</h2>
@@ -520,6 +609,7 @@ export function FindMyBenefitsQuiz() {
                 </div>
               ) : null}
 
+              {/* Step 1 — Situation (multi-select) */}
               {stepIndex === 1 ? (
                 <div className="mt-8">
                   <h2 className="text-3xl font-bold tracking-tight text-ink">
@@ -541,6 +631,7 @@ export function FindMyBenefitsQuiz() {
                 </div>
               ) : null}
 
+              {/* Step 2 — Need */}
               {stepIndex === 2 ? (
                 <div className="mt-8">
                   <h2 className="text-3xl font-bold tracking-tight text-ink">
@@ -553,6 +644,28 @@ export function FindMyBenefitsQuiz() {
                         label={option.label}
                         selected={need === option.value}
                         onClick={() => setNeed(option.value)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
+              {/* Step 3 — Income (new in v1.5) */}
+              {stepIndex === 3 ? (
+                <div className="mt-8">
+                  <h2 className="text-3xl font-bold tracking-tight text-ink">
+                    Roughly, what is your yearly household income?
+                  </h2>
+                  <p className="mt-3 text-base leading-7 text-slate-600 sm:text-lg">
+                    This helps us match you to the right programs. Your answer stays on your screen — nothing is stored or shared.
+                  </p>
+                  <div className="mt-6 grid gap-4">
+                    {INCOME_OPTIONS.map((option) => (
+                      <OptionButton
+                        key={option.value}
+                        label={option.label}
+                        selected={income === option.value}
+                        onClick={() => setIncome(option.value)}
                       />
                     ))}
                   </div>
