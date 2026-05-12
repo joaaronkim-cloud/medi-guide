@@ -107,28 +107,32 @@ const EXTRA_RESULTS: Record<string, ResultCard> = {
   // ── Income-driven cards (new in v1.5) ─────────────────────────────────
   //
   // mediCalIncome: shown for working-age adults with income under $20k.
-  // The 2026 Medi-Cal income limit for a single adult is ~$22,000 (138% FPL).
+  // 2026 Medi-Cal income limit for a single adult is $22,025/year (138% FPL,
+  // per HHS 2026 poverty guidelines: 100% FPL = $15,960 × 1.38 = $22,025).
+  // BenefitsCal.com is the official California online application portal.
   mediCalIncome: {
     key: "medi-cal-income",
     title: "Medi-Cal — Free Coverage You Likely Qualify For",
     description:
-      "At this income level, you are likely eligible for Medi-Cal, California's free or very low-cost health coverage. For a single adult in 2026, the income limit is approximately $22,000/year (138% of the federal poverty level). There's no cost to apply — apply at BenefitsCal.com and let the system confirm your eligibility.",
+      "At this income level, you are very likely eligible for Medi-Cal, California's free health coverage program. In 2026, the income limit for a single adult is approximately $22,025/year (138% of the federal poverty level) — if you earn less than that, you qualify for free, comprehensive coverage with no monthly premium. Apply for free at BenefitsCal.com; the application confirms your eligibility and enrolls you automatically if you qualify.",
     href: "/by-age/adults",
-    applyHref: "https://benefitscal.com/ApplyForBenefits/begin/ABOVR?lang=en",
+    applyHref: "https://benefitscal.com/",
     applyLabel: "Apply on BenefitsCal",
   },
 
   // coveredCaSubsidy: shown for working-age adults with income $20k–$70k.
-  // Federal Premium Tax Credits and California state subsidies apply up to
-  // 400% FPL (~$63,840/year for a single adult in 2026).
+  // 2026 note: enhanced IRA/ARPA subsidies expired Dec 31, 2025.
+  // Federal PTCs still available up to 400% FPL (~$63,840 single adult).
+  // California state subsidy now only covers up to 165% FPL (~$26,334 single adult).
+  // People at the very low end of this range ($20k–$22k) may qualify for Medi-Cal instead.
   coveredCaSubsidy: {
     key: "covered-ca-subsidy",
-    title: "Covered California — Subsidies Are Likely Available",
+    title: "Covered California — Check Your Subsidy Options",
     description:
-      "At your income level, federal Premium Tax Credits and California state subsidies can significantly lower your monthly Covered California premium. Many people at this income range pay much less than the sticker price. Use the Shop and Compare tool to see your actual estimated cost before ruling coverage out.",
+      "Federal Premium Tax Credits are available through Covered California for incomes up to 400% of the federal poverty level (~$63,840/year for a single person in 2026). Important 2026 change: the enhanced subsidies from 2021–2025 have expired, and 2026 premiums are higher on average as a result. California state subsidies now only apply up to 165% of the federal poverty level (~$26,300/year). If your income is close to $20,000–$22,000/year, you may qualify for free Medi-Cal instead — check BenefitsCal first. Use the Covered California Shop and Compare tool to see your actual estimated monthly cost.",
     href: "/by-age/adults",
-    applyHref: "https://www.coveredca.com/apply/",
-    applyLabel: "Apply on Covered CA",
+    applyHref: "https://www.coveredca.com/shop-and-compare/",
+    applyLabel: "Compare Plans on Covered CA",
   },
 
   // coveredCaCliff: shown for working-age adults with income over $70k.
@@ -137,9 +141,9 @@ const EXTRA_RESULTS: Record<string, ResultCard> = {
   // higher incomes due to higher FPL thresholds.
   coveredCaCliff: {
     key: "covered-ca-cliff",
-    title: "Covered California — Know the 2026 Subsidy Limit",
+    title: "Covered California — Above the 2026 Subsidy Limit",
     description:
-      "In 2026, federal premium subsidies (Premium Tax Credits) are generally no longer available for single adults earning above approximately $63,840/year (400% of the federal poverty level). Larger households may still qualify at higher incomes. Unsubsidized Covered California plans are still an option — use the Shop and Compare tool to review full-price marketplace plans and verify whether any California state assistance applies to your household.",
+      "In 2026, federal Premium Tax Credits end at 400% of the federal poverty level — approximately $63,840/year for a single adult. Larger households qualify at higher incomes because the poverty level scales with family size. California state subsidies are not available at this income level. Unsubsidized Covered California plans remain an option; use the Shop and Compare tool to review full-price marketplace plans and weigh them against employer or association plans.",
     href: "/by-age/adults",
     applyHref: "https://www.coveredca.com/shop-and-compare/",
     applyLabel: "Compare Plans on Covered CA",
@@ -188,11 +192,12 @@ const EXTRA_RESULTS: Record<string, ResultCard> = {
   },
   immigration: {
     key: "immigration",
-    title: "Undocumented and Mixed-Status Help",
-    description: "California coverage options for undocumented individuals and mixed-status families, including what triggers — and doesn't trigger — immigration concerns.",
+    title: "Undocumented and Mixed-Status Help — 2026 Changes",
+    description:
+      "2026 update: As of January 1, 2026, new undocumented adults (19+) can no longer enroll in full-scope Medi-Cal — only Emergency Medi-Cal and pregnancy-related Medi-Cal remain available for new adult applicants in this group. Children under 19, pregnant people, and former foster youth under 26 are still fully covered regardless of immigration status. Anyone already enrolled in Medi-Cal before January 1, 2026 can keep their coverage. Mixed-status families often have eligible members even if others are not — a certified enrollment counselor can help you understand your options.",
     href: "/by-situation#immigration",
-    applyHref: "https://benefitscal.com/ApplyForBenefits/begin/ABOVR?lang=en",
-    applyLabel: "Apply on BenefitsCal",
+    applyHref: "https://healthconsumer.org/medi-cal-changes-and-what-you-need-to-know/",
+    applyLabel: "See 2026 Medi-Cal changes",
   },
   veteran: {
     key: "veteran",
