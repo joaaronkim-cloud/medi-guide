@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { PrintSummary, type PrintBenefit } from "@/components/PrintSummary";
+import { BENEFIT_DETAILS } from "@/data/benefitDetails";
 
 type AgeAnswer = "under-18" | "18-29" | "30-64" | "65-plus";
 type IncomeAnswer = "under-20k" | "20k-40k" | "40k-70k" | "over-70k";
@@ -487,6 +488,7 @@ export function FindMyBenefitsQuiz() {
   const [situations, setSituations] = useState<SituationAnswer[]>([]);
   const [need, setNeed] = useState<NeedAnswer | null>(null);
   const [income, setIncome] = useState<IncomeAnswer | null>(null);
+  const [openDetail, setOpenDetail] = useState<string | null>(null);
 
   const isResultsStep = stepIndex >= QUESTION_COUNT;
   const progress = Math.round(((Math.min(stepIndex, QUESTION_COUNT - 1) + 1) / QUESTION_COUNT) * 100);
@@ -533,6 +535,7 @@ export function FindMyBenefitsQuiz() {
     setSituations([]);
     setNeed(null);
     setIncome(null);
+    setOpenDetail(null);
     setStepIndex(0);
   }
 
@@ -709,33 +712,148 @@ export function FindMyBenefitsQuiz() {
               </div>
 
               <div className="mt-6 grid gap-5">
-                {results.map((result) => (
-                  <article
-                    key={result.key}
-                    className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-card sm:p-8"
-                  >
-                    <h3 className="text-2xl font-bold tracking-tight text-ink">{result.title}</h3>
-                    <p className="mt-3 text-lg leading-8 text-slate-700">{result.description}</p>
-                    <div className="mt-6 flex flex-wrap gap-3">
-                      {result.applyHref && (
-                        <a
-                          href={result.applyHref}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="focus-ring inline-flex rounded-full bg-emerald-700 px-5 py-3 text-base font-semibold text-white transition hover:bg-emerald-800"
+                {results.map((result) => {
+                  const detail = BENEFIT_DETAILS[result.key];
+                  const isOpen = openDetail === result.key;
+                  return (
+                    <article
+                      key={result.key}
+                      className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-card sm:p-8"
+                    >
+                      <h3 className="text-2xl font-bold tracking-tight text-ink">{result.title}</h3>
+                      <p className="mt-3 text-lg leading-8 text-slate-700">{result.description}</p>
+
+                      <div className="mt-6 flex flex-wrap gap-3">
+                        {result.applyHref && (
+                          <a
+                            href={result.applyHref}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="focus-ring inline-flex rounded-full bg-emerald-700 px-5 py-3 text-base font-semibold text-white transition hover:bg-emerald-800"
+                          >
+                            {result.applyLabel ?? "Apply Now"} &rarr;
+                          </a>
+                        )}
+                        <Link
+                          href={result.href}
+                          className="focus-ring inline-flex rounded-full border border-brand-700 px-5 py-3 text-base font-semibold text-brand-700 transition hover:bg-brand-50"
                         >
-                          {result.applyLabel ?? "Apply Now"} &rarr;
-                        </a>
+                          See your options &rarr;
+                        </Link>
+                        {detail && (
+                          <button
+                            type="button"
+                            onClick={() => setOpenDetail(isOpen ? null : result.key)}
+                            className="focus-ring inline-flex items-center gap-2 rounded-full bg-slate-800 px-5 py-3 text-base font-semibold text-white transition hover:bg-slate-900"
+                          >
+                            {isOpen ? "Hide details" : "What documents do I need?"}
+                            <span aria-hidden="true" className="text-slate-300">{isOpen ? "↑" : "↓"}</span>
+                          </button>
+                        )}
+                      </div>
+
+                      {isOpen && detail && (
+                        <div className="mt-6 rounded-[1.5rem] border border-slate-200 bg-[linear-gradient(180deg,_#f8fafc_0%,_#f1f5f9_100%)] p-5 sm:p-6">
+
+                          {/* About This Program */}
+                          <div>
+                            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">About this program</p>
+                            <p className="mt-3 text-base leading-7 text-slate-700">{detail.longDescription}</p>
+                          </div>
+
+                          {/* Documents */}
+                          <div className="mt-6 border-t border-slate-200 pt-6">
+                            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Documents to gather</p>
+                            <ul className="mt-4 space-y-3">
+                              {detail.documents.required.map((doc, i) => (
+                                <li key={i} className="flex items-start gap-3">
+                                  <span className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-brand-700 text-xs font-bold text-white">
+                                    {i + 1}
+                                  </span>
+                                  <span className="text-base leading-7 text-slate-700">{doc}</span>
+                                </li>
+                              ))}
+                            </ul>
+                            {detail.documents.helpful && detail.documents.helpful.length > 0 && (
+                              <div className="mt-5">
+                                <p className="text-sm font-semibold text-slate-500">Also helpful — not strictly required:</p>
+                                <ul className="mt-2 space-y-2">
+                                  {detail.documents.helpful.map((doc, i) => (
+                                    <li key={i} className="flex items-start gap-3">
+                                      <span className="mt-2.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-slate-400" />
+                                      <span className="text-base leading-7 text-slate-600">{doc}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                            {detail.documents.notes && (
+                              <div className="mt-4 rounded-[1rem] border border-amber-200 bg-amber-50 px-4 py-3">
+                                <p className="text-sm leading-6 text-amber-900">
+                                  <strong>Note: </strong>{detail.documents.notes}
+                                </p>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* How to Apply */}
+                          <div className="mt-6 border-t border-slate-200 pt-6">
+                            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">How to apply — step by step</p>
+                            <ol className="mt-4 space-y-3">
+                              {detail.howToApply.steps.map((step, i) => (
+                                <li key={i} className="flex items-start gap-3">
+                                  <span className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-emerald-700 text-xs font-bold text-white">
+                                    {i + 1}
+                                  </span>
+                                  <span className="text-base leading-7 text-slate-700">{step}</span>
+                                </li>
+                              ))}
+                            </ol>
+                            <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+                              {detail.howToApply.phone && (
+                                <div className="rounded-[1rem] border border-brand-100 bg-brand-50 px-4 py-3">
+                                  <p className="text-sm font-semibold text-brand-900">{detail.howToApply.phone}</p>
+                                </div>
+                              )}
+                              {detail.howToApply.timeframe && (
+                                <div className="rounded-[1rem] border border-slate-200 bg-white px-4 py-3">
+                                  <p className="text-sm leading-6 text-slate-600">
+                                    <strong>Timeframe: </strong>{detail.howToApply.timeframe}
+                                  </p>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Good to Know */}
+                          {detail.goodToKnow && detail.goodToKnow.length > 0 && (
+                            <div className="mt-6 border-t border-slate-200 pt-6">
+                              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Good to know</p>
+                              <ul className="mt-4 space-y-3">
+                                {detail.goodToKnow.map((tip, i) => (
+                                  <li key={i} className="flex items-start gap-3">
+                                    <span className="mt-1 flex-shrink-0 text-sm font-bold text-brand-700">&#10003;</span>
+                                    <span className="text-base leading-7 text-slate-600">{tip}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+
+                          <div className="mt-5 flex justify-end">
+                            <button
+                              type="button"
+                              onClick={() => setOpenDetail(null)}
+                              className="focus-ring rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100"
+                            >
+                              Close details ↑
+                            </button>
+                          </div>
+                        </div>
                       )}
-                      <Link
-                        href={result.href}
-                        className="focus-ring inline-flex rounded-full border border-brand-700 px-5 py-3 text-base font-semibold text-brand-700 transition hover:bg-brand-50"
-                      >
-                        See your options &rarr;
-                      </Link>
-                    </div>
-                  </article>
-                ))}
+                    </article>
+                  );
+                })}
               </div>
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
