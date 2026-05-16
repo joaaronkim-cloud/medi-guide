@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useState, useEffect } from "react";
 import { PrintSummary, type PrintBenefit } from "@/components/PrintSummary";
 import { BENEFIT_DETAILS } from "@/data/benefitDetails";
+import { BENEFIT_DETAILS_ES } from "@/data/benefitDetailsEs";
 
 type AgeAnswer = "under-18" | "18-29" | "30-64" | "65-plus";
 type IncomeAnswer = "under-20k" | "20k-40k" | "40k-70k" | "over-70k";
@@ -640,7 +641,7 @@ function LangPill({
 }) {
   return (
     <div
-      className="flex overflow-hidden rounded-full border border-slate-200 text-sm font-semibold"
+      className="flex overflow-hidden rounded-full border border-slate-200 text-base font-semibold"
       role="group"
       aria-label="Language / Idioma"
     >
@@ -648,7 +649,7 @@ function LangPill({
         type="button"
         aria-pressed={lang === "en"}
         onClick={() => onChange("en")}
-        className={`px-3 py-1.5 transition ${
+        className={`px-5 py-2.5 transition ${
           lang === "en" ? "bg-brand-700 text-white" : "text-slate-600 hover:bg-slate-100"
         }`}
       >
@@ -658,7 +659,7 @@ function LangPill({
         type="button"
         aria-pressed={lang === "es"}
         onClick={() => onChange("es")}
-        className={`px-3 py-1.5 transition ${
+        className={`px-5 py-2.5 transition ${
           lang === "es" ? "bg-brand-700 text-white" : "text-slate-600 hover:bg-slate-100"
         }`}
       >
@@ -694,7 +695,6 @@ export function FindMyBenefitsQuiz() {
   function changeLang(next: Lang) {
     setLang(next);
     localStorage.setItem("medi-lang", next);
-    window.dispatchEvent(new CustomEvent<Lang>(LANG_EVENT, { detail: next }));
   }
 
   const t = UI[lang];
@@ -773,8 +773,14 @@ export function FindMyBenefitsQuiz() {
                   {t.pageTitle}
                 </h1>
               </div>
-              <div className="flex flex-col items-start gap-2 sm:items-end">
+              <div className="flex flex-col items-start gap-3 sm:items-end">
                 <LangPill lang={lang} onChange={changeLang} />
+                <a
+                  href="tel:18003001506"
+                  className="focus-ring inline-flex rounded-full border border-teal-600 px-5 py-2.5 text-sm font-semibold text-teal-700 transition hover:bg-teal-50"
+                >
+                  ¿Hablas español? 1-800-300-1506
+                </a>
                 <Link
                   href="/"
                   className="focus-ring inline-flex rounded-full border border-slate-300 px-5 py-3 text-base font-semibold text-slate-700 transition hover:bg-slate-50"
@@ -904,7 +910,9 @@ export function FindMyBenefitsQuiz() {
 
                 <div className="mt-6 grid gap-5">
                   {results.map((result) => {
-                    const detail = BENEFIT_DETAILS[result.key];
+                    const detail = lang === "es"
+                      ? (BENEFIT_DETAILS_ES[result.key] ?? BENEFIT_DETAILS[result.key])
+                      : BENEFIT_DETAILS[result.key];
                     const isOpen = openDetail === result.key;
                     const cardTitle = lang === "es" ? (CARD_ES[result.key]?.title ?? result.title) : result.title;
                     const cardDesc = lang === "es" ? (CARD_ES[result.key]?.description ?? result.description) : result.description;

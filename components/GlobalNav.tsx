@@ -3,10 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { LanguageToggle } from "@/components/LanguageToggle";
-import type { Language } from "@/data/programs";
-
-const LANG_EVENT = "medi-lang-change";
 
 const navItems = [
   { label: "Find My Benefits", href: "/find-my-benefits" },
@@ -27,23 +23,6 @@ function isActivePath(pathname: string, href: string) {
 export function GlobalNav() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-  const [lang, setLang] = useState<Language>("en");
-
-  useEffect(() => {
-    const stored = localStorage.getItem("medi-lang") as Language | null;
-    if (stored === "es") setLang("es");
-    function handleLangChange(e: Event) {
-      setLang((e as CustomEvent<Language>).detail);
-    }
-    window.addEventListener(LANG_EVENT, handleLangChange);
-    return () => window.removeEventListener(LANG_EVENT, handleLangChange);
-  }, []);
-
-  function changeLang(next: Language) {
-    setLang(next);
-    localStorage.setItem("medi-lang", next);
-    window.dispatchEvent(new CustomEvent<Language>(LANG_EVENT, { detail: next }));
-  }
 
   useEffect(() => {
     setIsOpen(false);
@@ -77,14 +56,7 @@ export function GlobalNav() {
             })}
           </nav>
 
-          <div className="hidden items-center gap-3 md:flex">
-            <LanguageToggle language={lang} onChange={changeLang} label="" />
-            <a
-              href="tel:18003001506"
-              className="focus-ring inline-flex rounded-full border border-teal-700 px-4 py-2.5 text-sm font-semibold text-teal-700 transition hover:bg-teal-50"
-            >
-              ¿Hablas español? 1-800-300-1506
-            </a>
+          <div className="hidden md:block">
             <Link
               href="/help"
               className="focus-ring inline-flex rounded-full bg-teal-700 px-5 py-3 text-base font-semibold text-white transition hover:bg-teal-800"
@@ -135,15 +107,6 @@ export function GlobalNav() {
               >
                 How to Apply
               </Link>
-              <a
-                href="tel:18003001506"
-                className="focus-ring inline-flex rounded-2xl border border-teal-700 px-4 py-4 text-base font-semibold text-teal-700 transition hover:bg-teal-50"
-              >
-                ¿Hablas español? 1-800-300-1506
-              </a>
-              <div className="mt-1 flex justify-start">
-                <LanguageToggle language={lang} onChange={changeLang} label="Language / Idioma" />
-              </div>
             </nav>
           </div>
         ) : null}
