@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { PrintSummary, type PrintBenefit } from "@/components/PrintSummary";
 import { BENEFIT_DETAILS } from "@/data/benefitDetails";
 
@@ -23,6 +23,7 @@ type SituationAnswer =
   | "homelessness"
   | "on-medi-cal"
   | "none";
+type Lang = "en" | "es";
 
 type ResultCard = {
   key: string;
@@ -34,6 +35,9 @@ type ResultCard = {
 };
 
 const QUESTION_COUNT = 4;
+const LANG_EVENT = "medi-lang-change";
+
+// ── Option arrays (values are programmatic; labels are English source) ────────
 
 const AGE_OPTIONS: Array<{ label: string; value: AgeAnswer }> = [
   { label: "Under 18", value: "under-18" },
@@ -68,6 +72,8 @@ const INCOME_OPTIONS: Array<{ label: string; value: IncomeAnswer }> = [
   { label: "$40k – $70k", value: "40k-70k" },
   { label: "Over $70k", value: "over-70k" },
 ] as const;
+
+// ── Result card definitions ────────────────────────────────────────────────────
 
 const AGE_RESULTS: Record<AgeAnswer, ResultCard> = {
   "under-18": {
@@ -105,12 +111,6 @@ const AGE_RESULTS: Record<AgeAnswer, ResultCard> = {
 };
 
 const EXTRA_RESULTS: Record<string, ResultCard> = {
-  // ── Income-driven cards (new in v1.5) ─────────────────────────────────
-  //
-  // mediCalIncome: shown for working-age adults with income under $20k.
-  // 2026 Medi-Cal income limit for a single adult is $22,025/year (138% FPL,
-  // per HHS 2026 poverty guidelines: 100% FPL = $15,960 × 1.38 = $22,025).
-  // BenefitsCal.com is the official California online application portal.
   mediCalIncome: {
     key: "medi-cal-income",
     title: "Medi-Cal — Free Coverage You Likely Qualify For",
@@ -120,12 +120,6 @@ const EXTRA_RESULTS: Record<string, ResultCard> = {
     applyHref: "https://benefitscal.com/",
     applyLabel: "Apply on BenefitsCal",
   },
-
-  // coveredCaSubsidy: shown for working-age adults with income $20k–$70k.
-  // 2026 note: enhanced IRA/ARPA subsidies expired Dec 31, 2025.
-  // Federal PTCs still available up to 400% FPL (~$63,840 single adult).
-  // California state subsidy now only covers up to 165% FPL (~$26,334 single adult).
-  // People at the very low end of this range ($20k–$22k) may qualify for Medi-Cal instead.
   coveredCaSubsidy: {
     key: "covered-ca-subsidy",
     title: "Covered California — Check Your Subsidy Options",
@@ -135,11 +129,6 @@ const EXTRA_RESULTS: Record<string, ResultCard> = {
     applyHref: "https://www.coveredca.com/shop-and-compare/",
     applyLabel: "Compare Plans on Covered CA",
   },
-
-  // coveredCaCliff: shown for working-age adults with income over $70k.
-  // In 2026, federal subsidies (Premium Tax Credits) end at 400% FPL
-  // (~$63,840/year for a single person). Families may still qualify at
-  // higher incomes due to higher FPL thresholds.
   coveredCaCliff: {
     key: "covered-ca-cliff",
     title: "Covered California — Above the 2026 Subsidy Limit",
@@ -149,8 +138,6 @@ const EXTRA_RESULTS: Record<string, ResultCard> = {
     applyHref: "https://www.coveredca.com/shop-and-compare/",
     applyLabel: "Compare Plans on Covered CA",
   },
-
-  // ── Existing cards (unchanged) ────────────────────────────────────────
   howToApply: {
     key: "how-to-apply",
     title: "How to Apply",
@@ -258,18 +245,7 @@ const EXTRA_RESULTS: Record<string, ResultCard> = {
   },
 };
 
-// ── Result-card assembly ───────────────────────────────────────────────────
-//
-// Income routing rules (2026 California):
-//   under-20k  → Medi-Cal (138% FPL for a single adult ≈ $22k)
-//   20k–40k    → Covered California with federal + state subsidies
-//   40k–70k    → Covered California with federal subsidies (up to 400% FPL ≈ $63.8k)
-//   over-70k   → Covered California, no federal subsidy for most single adults;
-//                highlight the 2026 subsidy cliff
-//
-// Income routing is applied only for working-age adults (18-29, 30-64).
-// Seniors (65+) and children (under-18) are handled by their age cards,
-// which already address the relevant income-related programs.
+// ── Result assembly ────────────────────────────────────────────────────────────
 
 function getQuizResults({
   age,
@@ -286,113 +262,56 @@ function getQuizResults({
   const seen = new Set<string>();
 
   function addCard(card: ResultCard) {
-    if (seen.has(card.key) || cards.length >= 5) {
-      return;
-    }
+    if (seen.has(card.key) || cards.length >= 5) return;
     seen.add(card.key);
     cards.push(card);
   }
 
-  // 1. Age-based starter (always first)
   addCard(AGE_RESULTS[age]);
 
-  // 2. Income-driven routing for working-age adults (inserted right after the
-  //    age card so it appears at the top of results with high prominence)
   const isWorkingAge = age === "18-29" || age === "30-64";
   if (income && isWorkingAge) {
     if (income === "under-20k") {
-      // Strong Medi-Cal route
       addCard(EXTRA_RESULTS.mediCalIncome);
     } else if (income === "20k-40k" || income === "40k-70k") {
-      // Covered California with subsidies
       addCard(EXTRA_RESULTS.coveredCaSubsidy);
     } else if (income === "over-70k") {
-      // Covered California; note the 2026 subsidy cliff for single adults
-      // (mediCalIncome is intentionally NOT added here — Medi-Cal is
-      //  income-filtered out for this bracket)
       addCard(EXTRA_RESULTS.coveredCaCliff);
     }
   }
 
-  // 3. Situation-based cards (unchanged logic)
-  if (situations.includes("no-insurance")) {
-    addCard(EXTRA_RESULTS.howToApply);
-  }
+  if (situations.includes("no-insurance")) addCard(EXTRA_RESULTS.howToApply);
+  if (situations.includes("lost-job")) addCard(EXTRA_RESULTS.jobLoss);
+  if (situations.includes("pregnant-new-baby")) addCard(EXTRA_RESULTS.pregnancy);
+  if (situations.includes("disability")) addCard(EXTRA_RESULTS.disability);
+  if (situations.includes("immigration")) addCard(EXTRA_RESULTS.immigration);
+  if (situations.includes("veteran")) addCard(EXTRA_RESULTS.veteran);
+  if (situations.includes("homelessness")) addCard(EXTRA_RESULTS.homelessness);
+  if (situations.includes("on-medi-cal")) addCard(EXTRA_RESULTS.currentMediCal);
 
-  if (situations.includes("lost-job")) {
-    addCard(EXTRA_RESULTS.jobLoss);
-  }
-
-  if (situations.includes("pregnant-new-baby")) {
-    addCard(EXTRA_RESULTS.pregnancy);
-  }
-
-  if (situations.includes("disability")) {
-    addCard(EXTRA_RESULTS.disability);
-  }
-
-  if (situations.includes("immigration")) {
-    addCard(EXTRA_RESULTS.immigration);
-  }
-
-  if (situations.includes("veteran")) {
-    addCard(EXTRA_RESULTS.veteran);
-  }
-
-  if (situations.includes("homelessness")) {
-    addCard(EXTRA_RESULTS.homelessness);
-  }
-
-  if (situations.includes("on-medi-cal")) {
-    addCard(EXTRA_RESULTS.currentMediCal);
-  }
-
-  // 4. Need-based cards (unchanged logic)
-  if (need === "coverage") {
-    addCard(EXTRA_RESULTS.howToApply);
-  }
-
-  if (need === "mental-health") {
-    addCard(EXTRA_RESULTS.mentalHealth);
-  }
-
+  if (need === "coverage") addCard(EXTRA_RESULTS.howToApply);
+  if (need === "mental-health") addCard(EXTRA_RESULTS.mentalHealth);
   if (need === "dental-vision") {
-    if (age === "under-18") {
-      addCard(AGE_RESULTS["under-18"]);
-    } else {
-      addCard(EXTRA_RESULTS.dentalVision);
-    }
+    if (age === "under-18") addCard(AGE_RESULTS["under-18"]);
+    else addCard(EXTRA_RESULTS.dentalVision);
   }
-
   if (need === "prescription-costs") {
-    if (age === "65-plus") {
-      addCard(AGE_RESULTS["65-plus"]);
-    }
+    if (age === "65-plus") addCard(AGE_RESULTS["65-plus"]);
     addCard(EXTRA_RESULTS.prescription);
   }
-
   if (need === "not-sure") {
     addCard(EXTRA_RESULTS.hiddenBenefits);
     addCard(EXTRA_RESULTS.howToApply);
   }
 
-  // 5. Backfill to ensure at least 3 cards
-  if (cards.length < 3) {
-    addCard(EXTRA_RESULTS.hiddenBenefits);
-  }
-
-  if (cards.length < 3) {
-    addCard(EXTRA_RESULTS.helpFaq);
-  }
-
-  if (cards.length < 3) {
-    addCard(EXTRA_RESULTS.howToApply);
-  }
+  if (cards.length < 3) addCard(EXTRA_RESULTS.hiddenBenefits);
+  if (cards.length < 3) addCard(EXTRA_RESULTS.helpFaq);
+  if (cards.length < 3) addCard(EXTRA_RESULTS.howToApply);
 
   return cards.slice(0, 5);
 }
 
-// ── Label maps (for print summary) ────────────────────────────────────────
+// ── Label maps (for print summary — always English) ────────────────────────────
 
 const AGE_LABELS: Record<AgeAnswer, string> = {
   "under-18": "under 18",
@@ -428,6 +347,236 @@ const NEED_LABELS: Record<NeedAnswer, string> = {
   "not-sure": "not sure yet",
 };
 
+// ── Spanish translations ───────────────────────────────────────────────────────
+
+const AGE_LABELS_ES: Record<AgeAnswer, string> = {
+  "under-18": "Menor de 18",
+  "18-29": "18–29",
+  "30-64": "30–64",
+  "65-plus": "65 o más",
+};
+
+const SITUATION_LABELS_ES: Record<SituationAnswer, string> = {
+  "no-insurance": "No tengo seguro médico",
+  "lost-job": "Perdí mi trabajo recientemente",
+  "pregnant-new-baby": "Estoy embarazada o acabo de tener un bebé",
+  disability: "Tengo una discapacidad",
+  immigration: "Soy indocumentado/a o tengo estatus migratorio mixto",
+  veteran: "Soy veterano/a",
+  homelessness: "Estoy sin hogar o en situación de vivienda inestable",
+  "on-medi-cal": "Actualmente estoy en Medi-Cal",
+  none: "Ninguna de estas aplica",
+};
+
+const NEED_LABELS_ES: Record<NeedAnswer, string> = {
+  coverage: "Encontrar cobertura de salud",
+  "mental-health": "Apoyo de salud mental",
+  "dental-vision": "Dental o visión",
+  "prescription-costs": "Costos de medicamentos",
+  "not-sure": "Todavía no sé",
+};
+
+const INCOME_LABELS_ES: Record<IncomeAnswer, string> = {
+  "under-20k": "Menos de $20,000",
+  "20k-40k": "$20,000 – $40,000",
+  "40k-70k": "$40,000 – $70,000",
+  "over-70k": "Más de $70,000",
+};
+
+/** Spanish apply-button labels, keyed by English label */
+const APPLY_LABEL_ES: Record<string, string> = {
+  "Apply on BenefitsCal": "Solicitar en BenefitsCal",
+  "Compare Plans on Covered CA": "Comparar Planes en Covered CA",
+  "Apply on Covered CA": "Solicitar en Covered CA",
+  "Check on BenefitsCal": "Verificar en BenefitsCal",
+  "See 2026 Medi-Cal changes": "Ver cambios de Medi-Cal 2026",
+  "Sign Up for Medicare": "Inscribirse en Medicare",
+  "Apply for VA Health Care": "Solicitar Atención Médica del VA",
+  "Apply Now": "Solicitar ahora",
+};
+
+/** Spanish titles and descriptions for every result card key */
+const CARD_ES: Record<string, { title: string; description: string }> = {
+  "age-kids": {
+    title: "Niños y Adolescentes",
+    description:
+      "Cobertura, dental, visión y salud escolar para niños y adolescentes, incluyendo apoyo para jóvenes en el sistema de crianza temporal.",
+  },
+  "age-young-adults": {
+    title: "Jóvenes Adultos",
+    description:
+      "Empieza aquí para planes de padres, Medi-Cal, estudiantes, trabajo independiente, atención reproductiva y preguntas sobre estatus migratorio.",
+  },
+  "age-adults": {
+    title: "Adultos",
+    description:
+      "Empieza aquí para Medi-Cal, Covered California, COBRA, cobertura para trabajadores independientes y dental para adultos.",
+  },
+  "age-seniors": {
+    title: "Adultos Mayores",
+    description:
+      "Empieza aquí para Medicare, cobertura de medicamentos, ayuda de Medi-Cal, PACE y beneficios para adultos mayores de bajos ingresos.",
+  },
+  "medi-cal-income": {
+    title: "Medi-Cal — Cobertura Gratuita para la que Probablemente Calificas",
+    description:
+      "Con este nivel de ingresos, es muy probable que califiques para Medi-Cal, el programa de seguro médico gratuito de California. En 2026, el límite de ingresos para un adulto soltero es aproximadamente $22,025 al año (138% del nivel federal de pobreza) — si ganas menos de eso, calificas para cobertura gratuita y completa sin prima mensual. Solicita gratis en BenefitsCal.com.",
+  },
+  "covered-ca-subsidy": {
+    title: "Covered California — Verifica tus Opciones de Subsidio",
+    description:
+      "Los Créditos Fiscales de Primas Federales están disponibles a través de Covered California para ingresos de hasta el 400% del nivel federal de pobreza (~$63,840 al año para una persona sola en 2026). Cambio importante en 2026: los subsidios mejorados de 2021–2025 han vencido. Los subsidios estatales de California ahora solo aplican hasta el 165% FPL (~$26,300 al año). Si tu ingreso está cerca de $20,000–$22,000 al año, podrías calificar para Medi-Cal gratuito.",
+  },
+  "covered-ca-cliff": {
+    title: "Covered California — Por Encima del Límite de Subsidio 2026",
+    description:
+      "En 2026, los Créditos Fiscales de Primas federales terminan al 400% del nivel federal de pobreza — aproximadamente $63,840 al año para un adulto soltero. Los hogares más grandes califican con ingresos más altos. Los planes sin subsidio de Covered California siguen siendo una opción.",
+  },
+  "how-to-apply": {
+    title: "Cómo Solicitar",
+    description:
+      "Guías paso a paso para solicitar Medi-Cal, Covered California y Medicare. Además de recursos de ayuda gratuita y tus derechos como paciente.",
+  },
+  "hidden-benefits": {
+    title: "Beneficios Ocultos que la Mayoría Desconoce",
+    description:
+      "Dental, visión, transporte, ayuda con comida, cuidado en el hogar, ahorros en medicamentos y más — muchos californianos califican pero no lo saben.",
+  },
+  "help-faq": {
+    title: "Ayuda y Preguntas Frecuentes",
+    description:
+      "Respuestas a las preguntas más comunes sobre la cobertura de salud de California, además de recursos gratuitos para obtener ayuda real.",
+  },
+  pregnancy: {
+    title: "Ayuda para el Embarazo y Nuevos Padres",
+    description:
+      "Opciones de cobertura para el embarazo y recién nacidos, incluyendo Medi-Cal para mujeres embarazadas, WIC y Family PACT para planificación familiar.",
+  },
+  disability: {
+    title: "Apoyo para Discapacidad y Condiciones Crónicas",
+    description:
+      "Opciones de Medi-Cal, apoyo de IHSS en el hogar y otros programas de California para personas con discapacidades o condiciones crónicas.",
+  },
+  immigration: {
+    title: "Ayuda para Indocumentados y Familias Mixtas — Cambios 2026",
+    description:
+      "Actualización 2026: Desde el 1 de enero de 2026, los nuevos adultos indocumentados (19+) ya no pueden inscribirse en Medi-Cal completo — solo Emergency Medi-Cal y Medi-Cal de embarazo siguen disponibles. Los niños menores de 19, personas embarazadas y ex-jóvenes de crianza temporal menores de 26 siguen cubiertos sin importar su estatus. Las familias de estatus mixto frecuentemente tienen miembros elegibles.",
+  },
+  veteran: {
+    title: "Ayuda de Cobertura para Veteranos",
+    description:
+      "Atención médica del VA, navegación con CalVet y cómo Medi-Cal o Covered California pueden trabajar junto a los beneficios del VA.",
+  },
+  homelessness: {
+    title: "Inestabilidad de Vivienda y Apoyo de Salud",
+    description:
+      "Opciones de inscripción a Medi-Cal para personas sin dirección estable, además de apoyo de coordinación de atención para personas con necesidades complejas.",
+  },
+  "mental-health": {
+    title: "Apoyo de Salud Mental",
+    description:
+      "Recursos gratuitos de salud mental incluyendo la línea de crisis 988, salud conductual de Medi-Cal y servicios de salud mental comunitarios.",
+  },
+  "dental-vision": {
+    title: "Ayuda Dental y de Visión",
+    description:
+      "Dental para adultos de Medi-Cal, cobertura de visión de Medi-Cal y cómo encontrar proveedores en tu red cerca de ti.",
+  },
+  prescription: {
+    title: "Ayuda con el Costo de Medicamentos",
+    description:
+      "Ayuda Extra para Medicare Parte D, cobertura de medicamentos de Medi-Cal y cómo reducir el costo de tus medicamentos.",
+  },
+  "current-medi-cal": {
+    title: "¿Ya estás en Medi-Cal? Descubre para qué más Calificas",
+    description:
+      "Muchos miembros de Medi-Cal no aprovechan beneficios adicionales — dental, visión, transporte, cuidado en el hogar y ayuda con comida CalFresh.",
+  },
+  "job-loss": {
+    title: "Período sin Cobertura Después de Perder el Empleo",
+    description:
+      "Tus opciones cuando pierdes cobertura del empleador: inscripción especial de Covered California (ventana de 60 días), Medi-Cal y COBRA.",
+  },
+};
+
+/** All UI strings in both languages */
+const UI = {
+  en: {
+    eyebrow: "Find My Benefits",
+    pageTitle: "Let’s find what you qualify for.",
+    pageSubtitle:
+      "Based on your answers, we’ll show you the California health programs most likely to help your situation.",
+    pageTagline: "Four quick questions. No account. Nothing saved.",
+    backToHome: "Back to Homepage",
+    questionOf: (n: number) => `Question ${n} of ${QUESTION_COUNT}`,
+    ageQ: "How old are you?",
+    situationQ: "What is your situation right now?",
+    situationHint: "Pick all that apply.",
+    needQ: "What do you need help with most?",
+    incomeQ: "Roughly, what is your yearly household income?",
+    incomeHint:
+      "This helps us match you to the right programs. Your answer stays on your screen — nothing is stored or shared.",
+    back: "Back",
+    next: "Next",
+    resultsHeading: "Based on your answers, here’s what you may qualify for:",
+    resultsSub:
+      "These are starting points only. Your actual eligibility depends on your income and household. All resources listed are free.",
+    seeOptions: "See your options →",
+    docsOpen: "What documents do I need?",
+    docsClose: "Hide details",
+    closePanel: "Close details ↑",
+    startOver: "Start over",
+    aboutProgram: "About this program",
+    docsSection: "Documents to gather",
+    alsoHelpful: "Also helpful — not strictly required:",
+    howToApplySection: "How to apply — step by step",
+    timeframe: "Timeframe:",
+    goodToKnow: "Good to know",
+    noteLabel: "Note:",
+    disclaimerText:
+      "Your answers stay on your screen — nothing is saved, stored, or shared. For a more exact estimate, use the",
+    disclaimerLink: "Covered California Shop and Compare tool",
+  },
+  es: {
+    eyebrow: "Encontrar Mis Beneficios",
+    pageTitle: "Descubramos para qué calificas.",
+    pageSubtitle:
+      "Según tus respuestas, te mostraremos los programas de salud de California que probablemente más te ayuden.",
+    pageTagline: "Cuatro preguntas rápidas. Sin cuenta. No se guarda nada.",
+    backToHome: "Volver al Inicio",
+    questionOf: (n: number) => `Pregunta ${n} de ${QUESTION_COUNT}`,
+    ageQ: "¿Cuántos años tienes?",
+    situationQ: "¿Cuál es tu situación actual?",
+    situationHint: "Selecciona todas las que apliquen.",
+    needQ: "¿Con qué necesitas más ayuda?",
+    incomeQ: "¿Aproximadamente, cuál es el ingreso anual de tu hogar?",
+    incomeHint:
+      "Esto nos ayuda a encontrar los programas correctos para ti. Tu respuesta solo se muestra en tu pantalla — no se guarda ni comparte.",
+    back: "Atrás",
+    next: "Siguiente",
+    resultsHeading: "Según tus respuestas, esto es para lo que podrías calificar:",
+    resultsSub:
+      "Estos son solo puntos de partida. Tu elegibilidad real depende de tus ingresos y tu hogar. Todos los recursos listados son gratuitos.",
+    seeOptions: "Ver tus opciones →",
+    docsOpen: "¿Qué documentos necesito?",
+    docsClose: "Ocultar detalles",
+    closePanel: "Cerrar detalles ↑",
+    startOver: "Comenzar de nuevo",
+    aboutProgram: "Sobre este programa",
+    docsSection: "Documentos a reunir",
+    alsoHelpful: "También útil — no estrictamente necesario:",
+    howToApplySection: "Cómo solicitar — paso a paso",
+    timeframe: "Tiempo de procesamiento:",
+    goodToKnow: "Importante saber",
+    noteLabel: "Nota:",
+    disclaimerText:
+      "Tus respuestas solo se muestran en tu pantalla — no se guardan, almacenan ni comparten. Para un estimado más preciso, usa la",
+    disclaimerLink: "herramienta de Comparación de Covered California",
+  },
+} as const;
+
+// ── Eligibility summary (print — always English) ───────────────────────────────
+
 function buildEligibilitySummary(
   age: AgeAnswer,
   situations: SituationAnswer[],
@@ -453,7 +602,7 @@ function buildEligibilitySummary(
   );
 }
 
-// ── Shared button component ────────────────────────────────────────────────
+// ── Shared option button ───────────────────────────────────────────────────────
 
 function OptionButton({
   label,
@@ -480,7 +629,46 @@ function OptionButton({
   );
 }
 
-// ── Quiz component ─────────────────────────────────────────────────────────
+// ── Inline language toggle ─────────────────────────────────────────────────────
+
+function LangPill({
+  lang,
+  onChange,
+}: {
+  lang: Lang;
+  onChange: (next: Lang) => void;
+}) {
+  return (
+    <div
+      className="flex overflow-hidden rounded-full border border-slate-200 text-sm font-semibold"
+      role="group"
+      aria-label="Language / Idioma"
+    >
+      <button
+        type="button"
+        aria-pressed={lang === "en"}
+        onClick={() => onChange("en")}
+        className={`px-3 py-1.5 transition ${
+          lang === "en" ? "bg-brand-700 text-white" : "text-slate-600 hover:bg-slate-100"
+        }`}
+      >
+        EN
+      </button>
+      <button
+        type="button"
+        aria-pressed={lang === "es"}
+        onClick={() => onChange("es")}
+        className={`px-3 py-1.5 transition ${
+          lang === "es" ? "bg-brand-700 text-white" : "text-slate-600 hover:bg-slate-100"
+        }`}
+      >
+        ES
+      </button>
+    </div>
+  );
+}
+
+// ── Quiz component ─────────────────────────────────────────────────────────────
 
 export function FindMyBenefitsQuiz() {
   const [stepIndex, setStepIndex] = useState(0);
@@ -489,26 +677,41 @@ export function FindMyBenefitsQuiz() {
   const [need, setNeed] = useState<NeedAnswer | null>(null);
   const [income, setIncome] = useState<IncomeAnswer | null>(null);
   const [openDetail, setOpenDetail] = useState<string | null>(null);
+  const [lang, setLang] = useState<Lang>("en");
+
+  // Sync language with nav toggle via localStorage + custom event
+  useEffect(() => {
+    const stored = localStorage.getItem("medi-lang") as Lang | null;
+    if (stored === "es") setLang("es");
+
+    function handleLangChange(e: Event) {
+      setLang((e as CustomEvent<Lang>).detail);
+    }
+    window.addEventListener(LANG_EVENT, handleLangChange);
+    return () => window.removeEventListener(LANG_EVENT, handleLangChange);
+  }, []);
+
+  function changeLang(next: Lang) {
+    setLang(next);
+    localStorage.setItem("medi-lang", next);
+    window.dispatchEvent(new CustomEvent<Lang>(LANG_EVENT, { detail: next }));
+  }
+
+  const t = UI[lang];
 
   const isResultsStep = stepIndex >= QUESTION_COUNT;
   const progress = Math.round(((Math.min(stepIndex, QUESTION_COUNT - 1) + 1) / QUESTION_COUNT) * 100);
 
   const results = useMemo(() => {
-    if (!age || !need || situations.length === 0) {
-      return [];
-    }
+    if (!age || !need || situations.length === 0) return [];
     return getQuizResults({ age, situations, need, income });
   }, [age, situations, need, income]);
 
   function toggleSituation(value: SituationAnswer) {
     setSituations((current) => {
-      if (value === "none") {
-        return ["none"];
-      }
+      if (value === "none") return ["none"];
       const withoutNone = current.filter((item) => item !== "none");
-      if (withoutNone.includes(value)) {
-        return withoutNone.filter((item) => item !== value);
-      }
+      if (withoutNone.includes(value)) return withoutNone.filter((item) => item !== value);
       return [...withoutNone, value];
     });
   }
@@ -558,346 +761,356 @@ export function FindMyBenefitsQuiz() {
 
   return (
     <>
-    <div className="print:hidden min-h-screen bg-[radial-gradient(circle_at_top,_rgba(214,236,255,0.55),_transparent_34%),linear-gradient(180deg,_#f9fcff_0%,_#f7fbf8_52%,_#fffaf2_100%)]">
-      <main className="mx-auto max-w-5xl px-6 py-8 sm:px-8 sm:py-12">
-        <header className="rounded-[2rem] border border-white/70 bg-white/92 p-6 shadow-card sm:p-10">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-700">Find My Benefits</p>
-              <h1 className="mt-3 text-4xl font-bold tracking-tight text-ink sm:text-5xl">
-                Let&apos;s find what you qualify for.
-              </h1>
-            </div>
-
-            <Link
-              href="/"
-              className="focus-ring inline-flex rounded-full border border-slate-300 px-5 py-3 text-base font-semibold text-slate-700 transition hover:bg-slate-50"
-            >
-              Back to Homepage
-            </Link>
-          </div>
-
-          <p className="mt-5 max-w-3xl text-lg leading-8 text-slate-700 sm:text-xl">
-            Based on your answers, we&apos;ll show you the California health programs most likely to help your situation.
-          </p>
-          <p className="mt-3 max-w-3xl text-base leading-7 text-slate-600 sm:text-lg">
-            Four quick questions. No account. Nothing saved.
-          </p>
-        </header>
-
-        <section className="mt-8 rounded-[2rem] border border-white/70 bg-white/92 p-6 shadow-card sm:p-10">
-          {!isResultsStep ? (
-            <>
-              <div className="flex items-center justify-between gap-4 text-sm font-semibold text-slate-500">
-                <span>Question {stepIndex + 1} of {QUESTION_COUNT}</span>
-                <span>{progress}%</span>
-              </div>
-
-              <div className="mt-4 h-3 w-full overflow-hidden rounded-full bg-slate-100" aria-hidden="true">
-                <div
-                  className="h-full rounded-full bg-brand-700 transition-all"
-                  style={{ width: `${progress}%` }}
-                />
-              </div>
-
-              {/* Step 0 — Age */}
-              {stepIndex === 0 ? (
-                <div className="mt-8">
-                  <h2 className="text-3xl font-bold tracking-tight text-ink">How old are you?</h2>
-                  <div className="mt-6 grid gap-4">
-                    {AGE_OPTIONS.map((option) => (
-                      <OptionButton
-                        key={option.value}
-                        label={option.label}
-                        selected={age === option.value}
-                        onClick={() => setAge(option.value)}
-                      />
-                    ))}
-                  </div>
-                </div>
-              ) : null}
-
-              {/* Step 1 — Situation (multi-select) */}
-              {stepIndex === 1 ? (
-                <div className="mt-8">
-                  <h2 className="text-3xl font-bold tracking-tight text-ink">
-                    What is your situation right now?
-                  </h2>
-                  <p className="mt-3 text-base leading-7 text-slate-600 sm:text-lg">
-                    Pick all that apply.
-                  </p>
-                  <div className="mt-6 grid gap-4">
-                    {SITUATION_OPTIONS.map((option) => (
-                      <OptionButton
-                        key={option.value}
-                        label={option.label}
-                        selected={situations.includes(option.value)}
-                        onClick={() => toggleSituation(option.value)}
-                      />
-                    ))}
-                  </div>
-                </div>
-              ) : null}
-
-              {/* Step 2 — Need */}
-              {stepIndex === 2 ? (
-                <div className="mt-8">
-                  <h2 className="text-3xl font-bold tracking-tight text-ink">
-                    What do you need help with most?
-                  </h2>
-                  <div className="mt-6 grid gap-4">
-                    {NEED_OPTIONS.map((option) => (
-                      <OptionButton
-                        key={option.value}
-                        label={option.label}
-                        selected={need === option.value}
-                        onClick={() => setNeed(option.value)}
-                      />
-                    ))}
-                  </div>
-                </div>
-              ) : null}
-
-              {/* Step 3 — Income (new in v1.5) */}
-              {stepIndex === 3 ? (
-                <div className="mt-8">
-                  <h2 className="text-3xl font-bold tracking-tight text-ink">
-                    Roughly, what is your yearly household income?
-                  </h2>
-                  <p className="mt-3 text-base leading-7 text-slate-600 sm:text-lg">
-                    This helps us match you to the right programs. Your answer stays on your screen — nothing is stored or shared.
-                  </p>
-                  <div className="mt-6 grid gap-4">
-                    {INCOME_OPTIONS.map((option) => (
-                      <OptionButton
-                        key={option.value}
-                        label={option.label}
-                        selected={income === option.value}
-                        onClick={() => setIncome(option.value)}
-                      />
-                    ))}
-                  </div>
-                </div>
-              ) : null}
-
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <button
-                  type="button"
-                  onClick={goBack}
-                  disabled={stepIndex === 0}
-                  className="focus-ring rounded-full border border-slate-300 px-5 py-3 text-base font-semibold text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Back
-                </button>
-                <button
-                  type="button"
-                  onClick={goNext}
-                  disabled={!canGoNext()}
-                  className="focus-ring rounded-full bg-brand-700 px-6 py-3 text-base font-semibold text-white transition hover:bg-brand-900 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Next
-                </button>
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="rounded-[1.75rem] border border-brand-100 bg-brand-50 p-6">
-                <h2 className="text-3xl font-bold tracking-tight text-ink">
-                  Based on your answers, here&apos;s what you may qualify for:
-                </h2>
-                <p className="mt-3 text-lg leading-8 text-slate-700">
-                  These are starting points only. Your actual eligibility depends on your income and household.
-                  All resources listed are free.
+      <div className="print:hidden min-h-screen bg-[radial-gradient(circle_at_top,_rgba(214,236,255,0.55),_transparent_34%),linear-gradient(180deg,_#f9fcff_0%,_#f7fbf8_52%,_#fffaf2_100%)]">
+        <main className="mx-auto max-w-5xl px-6 py-8 sm:px-8 sm:py-12">
+          <header className="rounded-[2rem] border border-white/70 bg-white/92 p-6 shadow-card sm:p-10">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-700">
+                  {t.eyebrow}
                 </p>
+                <h1 className="mt-3 text-4xl font-bold tracking-tight text-ink sm:text-5xl">
+                  {t.pageTitle}
+                </h1>
               </div>
+              <div className="flex flex-col items-start gap-2 sm:items-end">
+                <LangPill lang={lang} onChange={changeLang} />
+                <Link
+                  href="/"
+                  className="focus-ring inline-flex rounded-full border border-slate-300 px-5 py-3 text-base font-semibold text-slate-700 transition hover:bg-slate-50"
+                >
+                  {t.backToHome}
+                </Link>
+              </div>
+            </div>
+            <p className="mt-5 max-w-3xl text-lg leading-8 text-slate-700 sm:text-xl">
+              {t.pageSubtitle}
+            </p>
+            <p className="mt-3 max-w-3xl text-base leading-7 text-slate-600 sm:text-lg">
+              {t.pageTagline}
+            </p>
+          </header>
 
-              <div className="mt-6 grid gap-5">
-                {results.map((result) => {
-                  const detail = BENEFIT_DETAILS[result.key];
-                  const isOpen = openDetail === result.key;
-                  return (
-                    <article
-                      key={result.key}
-                      className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-card sm:p-8"
-                    >
-                      <h3 className="text-2xl font-bold tracking-tight text-ink">{result.title}</h3>
-                      <p className="mt-3 text-lg leading-8 text-slate-700">{result.description}</p>
+          <section className="mt-8 rounded-[2rem] border border-white/70 bg-white/92 p-6 shadow-card sm:p-10">
+            {!isResultsStep ? (
+              <>
+                <div className="flex items-center justify-between gap-4 text-sm font-semibold text-slate-500">
+                  <span>{t.questionOf(stepIndex + 1)}</span>
+                  <span>{progress}%</span>
+                </div>
 
-                      <div className="mt-6 flex flex-wrap gap-3">
-                        {result.applyHref && (
-                          <a
-                            href={result.applyHref}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="focus-ring inline-flex rounded-full bg-emerald-700 px-5 py-3 text-base font-semibold text-white transition hover:bg-emerald-800"
+                <div className="mt-4 h-3 w-full overflow-hidden rounded-full bg-slate-100" aria-hidden="true">
+                  <div
+                    className="h-full rounded-full bg-brand-700 transition-all"
+                    style={{ width: `${progress}%` }}
+                  />
+                </div>
+
+                {/* Step 0 — Age */}
+                {stepIndex === 0 && (
+                  <div className="mt-8">
+                    <h2 className="text-3xl font-bold tracking-tight text-ink">{t.ageQ}</h2>
+                    <div className="mt-6 grid gap-4">
+                      {AGE_OPTIONS.map((option) => (
+                        <OptionButton
+                          key={option.value}
+                          label={lang === "es" ? AGE_LABELS_ES[option.value] : option.label}
+                          selected={age === option.value}
+                          onClick={() => setAge(option.value)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Step 1 — Situation (multi-select) */}
+                {stepIndex === 1 && (
+                  <div className="mt-8">
+                    <h2 className="text-3xl font-bold tracking-tight text-ink">{t.situationQ}</h2>
+                    <p className="mt-3 text-base leading-7 text-slate-600 sm:text-lg">{t.situationHint}</p>
+                    <div className="mt-6 grid gap-4">
+                      {SITUATION_OPTIONS.map((option) => (
+                        <OptionButton
+                          key={option.value}
+                          label={lang === "es" ? SITUATION_LABELS_ES[option.value] : option.label}
+                          selected={situations.includes(option.value)}
+                          onClick={() => toggleSituation(option.value)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Step 2 — Need */}
+                {stepIndex === 2 && (
+                  <div className="mt-8">
+                    <h2 className="text-3xl font-bold tracking-tight text-ink">{t.needQ}</h2>
+                    <div className="mt-6 grid gap-4">
+                      {NEED_OPTIONS.map((option) => (
+                        <OptionButton
+                          key={option.value}
+                          label={lang === "es" ? NEED_LABELS_ES[option.value] : option.label}
+                          selected={need === option.value}
+                          onClick={() => setNeed(option.value)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Step 3 — Income */}
+                {stepIndex === 3 && (
+                  <div className="mt-8">
+                    <h2 className="text-3xl font-bold tracking-tight text-ink">{t.incomeQ}</h2>
+                    <p className="mt-3 text-base leading-7 text-slate-600 sm:text-lg">{t.incomeHint}</p>
+                    <div className="mt-6 grid gap-4">
+                      {INCOME_OPTIONS.map((option) => (
+                        <OptionButton
+                          key={option.value}
+                          label={lang === "es" ? INCOME_LABELS_ES[option.value] : option.label}
+                          selected={income === option.value}
+                          onClick={() => setIncome(option.value)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                  <button
+                    type="button"
+                    onClick={goBack}
+                    disabled={stepIndex === 0}
+                    className="focus-ring rounded-full border border-slate-300 px-5 py-3 text-base font-semibold text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {t.back}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={goNext}
+                    disabled={!canGoNext()}
+                    className="focus-ring rounded-full bg-brand-700 px-6 py-3 text-base font-semibold text-white transition hover:bg-brand-900 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {t.next}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="rounded-[1.75rem] border border-brand-100 bg-brand-50 p-6">
+                  <h2 className="text-3xl font-bold tracking-tight text-ink">{t.resultsHeading}</h2>
+                  <p className="mt-3 text-lg leading-8 text-slate-700">{t.resultsSub}</p>
+                </div>
+
+                <div className="mt-6 grid gap-5">
+                  {results.map((result) => {
+                    const detail = BENEFIT_DETAILS[result.key];
+                    const isOpen = openDetail === result.key;
+                    const cardTitle = lang === "es" ? (CARD_ES[result.key]?.title ?? result.title) : result.title;
+                    const cardDesc = lang === "es" ? (CARD_ES[result.key]?.description ?? result.description) : result.description;
+                    const applyLabel = lang === "es"
+                      ? (APPLY_LABEL_ES[result.applyLabel ?? ""] ?? result.applyLabel ?? "Apply Now")
+                      : (result.applyLabel ?? "Apply Now");
+
+                    return (
+                      <article
+                        key={result.key}
+                        className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-card sm:p-8"
+                      >
+                        <h3 className="text-2xl font-bold tracking-tight text-ink">{cardTitle}</h3>
+                        <p className="mt-3 text-lg leading-8 text-slate-700">{cardDesc}</p>
+
+                        <div className="mt-6 flex flex-wrap gap-3">
+                          {result.applyHref && (
+                            <a
+                              href={result.applyHref}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="focus-ring inline-flex rounded-full bg-emerald-700 px-5 py-3 text-base font-semibold text-white transition hover:bg-emerald-800"
+                            >
+                              {applyLabel} &rarr;
+                            </a>
+                          )}
+                          <Link
+                            href={result.href}
+                            className="focus-ring inline-flex rounded-full border border-brand-700 px-5 py-3 text-base font-semibold text-brand-700 transition hover:bg-brand-50"
                           >
-                            {result.applyLabel ?? "Apply Now"} &rarr;
-                          </a>
-                        )}
-                        <Link
-                          href={result.href}
-                          className="focus-ring inline-flex rounded-full border border-brand-700 px-5 py-3 text-base font-semibold text-brand-700 transition hover:bg-brand-50"
-                        >
-                          See your options &rarr;
-                        </Link>
-                        {detail && (
-                          <button
-                            type="button"
-                            onClick={() => setOpenDetail(isOpen ? null : result.key)}
-                            className="focus-ring inline-flex items-center gap-2 rounded-full bg-slate-800 px-5 py-3 text-base font-semibold text-white transition hover:bg-slate-900"
-                          >
-                            {isOpen ? "Hide details" : "What documents do I need?"}
-                            <span aria-hidden="true" className="text-slate-300">{isOpen ? "↑" : "↓"}</span>
-                          </button>
-                        )}
-                      </div>
+                            {t.seeOptions}
+                          </Link>
+                          {detail && (
+                            <button
+                              type="button"
+                              onClick={() => setOpenDetail(isOpen ? null : result.key)}
+                              className="focus-ring inline-flex items-center gap-2 rounded-full bg-slate-800 px-5 py-3 text-base font-semibold text-white transition hover:bg-slate-900"
+                            >
+                              {isOpen ? t.docsClose : t.docsOpen}
+                              <span aria-hidden="true" className="text-slate-300">
+                                {isOpen ? "↑" : "↓"}
+                              </span>
+                            </button>
+                          )}
+                        </div>
 
-                      {isOpen && detail && (
-                        <div className="mt-6 rounded-[1.5rem] border border-slate-200 bg-[linear-gradient(180deg,_#f8fafc_0%,_#f1f5f9_100%)] p-5 sm:p-6">
+                        {isOpen && detail && (
+                          <div className="mt-6 rounded-[1.5rem] border border-slate-200 bg-[linear-gradient(180deg,_#f8fafc_0%,_#f1f5f9_100%)] p-5 sm:p-6">
+                            {/* About */}
+                            <div>
+                              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+                                {t.aboutProgram}
+                              </p>
+                              <p className="mt-3 text-base leading-7 text-slate-700">{detail.longDescription}</p>
+                            </div>
 
-                          {/* About This Program */}
-                          <div>
-                            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">About this program</p>
-                            <p className="mt-3 text-base leading-7 text-slate-700">{detail.longDescription}</p>
-                          </div>
+                            {/* Documents */}
+                            <div className="mt-6 border-t border-slate-200 pt-6">
+                              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+                                {t.docsSection}
+                              </p>
+                              <ul className="mt-4 space-y-3">
+                                {detail.documents.required.map((doc, i) => (
+                                  <li key={i} className="flex items-start gap-3">
+                                    <span className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-brand-700 text-xs font-bold text-white">
+                                      {i + 1}
+                                    </span>
+                                    <span className="text-base leading-7 text-slate-700">{doc}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                              {detail.documents.helpful && detail.documents.helpful.length > 0 && (
+                                <div className="mt-5">
+                                  <p className="text-sm font-semibold text-slate-500">{t.alsoHelpful}</p>
+                                  <ul className="mt-2 space-y-2">
+                                    {detail.documents.helpful.map((doc, i) => (
+                                      <li key={i} className="flex items-start gap-3">
+                                        <span className="mt-2.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-slate-400" />
+                                        <span className="text-base leading-7 text-slate-600">{doc}</span>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+                              {detail.documents.notes && (
+                                <div className="mt-4 rounded-[1rem] border border-amber-200 bg-amber-50 px-4 py-3">
+                                  <p className="text-sm leading-6 text-amber-900">
+                                    <strong>{t.noteLabel} </strong>
+                                    {detail.documents.notes}
+                                  </p>
+                                </div>
+                              )}
+                            </div>
 
-                          {/* Documents */}
-                          <div className="mt-6 border-t border-slate-200 pt-6">
-                            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Documents to gather</p>
-                            <ul className="mt-4 space-y-3">
-                              {detail.documents.required.map((doc, i) => (
-                                <li key={i} className="flex items-start gap-3">
-                                  <span className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-brand-700 text-xs font-bold text-white">
-                                    {i + 1}
-                                  </span>
-                                  <span className="text-base leading-7 text-slate-700">{doc}</span>
-                                </li>
-                              ))}
-                            </ul>
-                            {detail.documents.helpful && detail.documents.helpful.length > 0 && (
-                              <div className="mt-5">
-                                <p className="text-sm font-semibold text-slate-500">Also helpful — not strictly required:</p>
-                                <ul className="mt-2 space-y-2">
-                                  {detail.documents.helpful.map((doc, i) => (
+                            {/* How to Apply */}
+                            <div className="mt-6 border-t border-slate-200 pt-6">
+                              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+                                {t.howToApplySection}
+                              </p>
+                              <ol className="mt-4 space-y-3">
+                                {detail.howToApply.steps.map((step, i) => (
+                                  <li key={i} className="flex items-start gap-3">
+                                    <span className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-emerald-700 text-xs font-bold text-white">
+                                      {i + 1}
+                                    </span>
+                                    <span className="text-base leading-7 text-slate-700">{step}</span>
+                                  </li>
+                                ))}
+                              </ol>
+                              <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+                                {detail.howToApply.phone && (
+                                  <div className="rounded-[1rem] border border-brand-100 bg-brand-50 px-4 py-3">
+                                    <p className="text-sm font-semibold text-brand-900">
+                                      {detail.howToApply.phone}
+                                    </p>
+                                  </div>
+                                )}
+                                {detail.howToApply.timeframe && (
+                                  <div className="rounded-[1rem] border border-slate-200 bg-white px-4 py-3">
+                                    <p className="text-sm leading-6 text-slate-600">
+                                      <strong>{t.timeframe} </strong>
+                                      {detail.howToApply.timeframe}
+                                    </p>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Good to Know */}
+                            {detail.goodToKnow && detail.goodToKnow.length > 0 && (
+                              <div className="mt-6 border-t border-slate-200 pt-6">
+                                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+                                  {t.goodToKnow}
+                                </p>
+                                <ul className="mt-4 space-y-3">
+                                  {detail.goodToKnow.map((tip, i) => (
                                     <li key={i} className="flex items-start gap-3">
-                                      <span className="mt-2.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-slate-400" />
-                                      <span className="text-base leading-7 text-slate-600">{doc}</span>
+                                      <span className="mt-1 flex-shrink-0 text-sm font-bold text-brand-700">
+                                        &#10003;
+                                      </span>
+                                      <span className="text-base leading-7 text-slate-600">{tip}</span>
                                     </li>
                                   ))}
                                 </ul>
                               </div>
                             )}
-                            {detail.documents.notes && (
-                              <div className="mt-4 rounded-[1rem] border border-amber-200 bg-amber-50 px-4 py-3">
-                                <p className="text-sm leading-6 text-amber-900">
-                                  <strong>Note: </strong>{detail.documents.notes}
-                                </p>
-                              </div>
-                            )}
-                          </div>
 
-                          {/* How to Apply */}
-                          <div className="mt-6 border-t border-slate-200 pt-6">
-                            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">How to apply — step by step</p>
-                            <ol className="mt-4 space-y-3">
-                              {detail.howToApply.steps.map((step, i) => (
-                                <li key={i} className="flex items-start gap-3">
-                                  <span className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-emerald-700 text-xs font-bold text-white">
-                                    {i + 1}
-                                  </span>
-                                  <span className="text-base leading-7 text-slate-700">{step}</span>
-                                </li>
-                              ))}
-                            </ol>
-                            <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-                              {detail.howToApply.phone && (
-                                <div className="rounded-[1rem] border border-brand-100 bg-brand-50 px-4 py-3">
-                                  <p className="text-sm font-semibold text-brand-900">{detail.howToApply.phone}</p>
-                                </div>
-                              )}
-                              {detail.howToApply.timeframe && (
-                                <div className="rounded-[1rem] border border-slate-200 bg-white px-4 py-3">
-                                  <p className="text-sm leading-6 text-slate-600">
-                                    <strong>Timeframe: </strong>{detail.howToApply.timeframe}
-                                  </p>
-                                </div>
-                              )}
+                            <div className="mt-5 flex justify-end">
+                              <button
+                                type="button"
+                                onClick={() => setOpenDetail(null)}
+                                className="focus-ring rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100"
+                              >
+                                {t.closePanel}
+                              </button>
                             </div>
                           </div>
+                        )}
+                      </article>
+                    );
+                  })}
+                </div>
 
-                          {/* Good to Know */}
-                          {detail.goodToKnow && detail.goodToKnow.length > 0 && (
-                            <div className="mt-6 border-t border-slate-200 pt-6">
-                              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Good to know</p>
-                              <ul className="mt-4 space-y-3">
-                                {detail.goodToKnow.map((tip, i) => (
-                                  <li key={i} className="flex items-start gap-3">
-                                    <span className="mt-1 flex-shrink-0 text-sm font-bold text-brand-700">&#10003;</span>
-                                    <span className="text-base leading-7 text-slate-600">{tip}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
+                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                  <button
+                    type="button"
+                    onClick={goBack}
+                    className="focus-ring rounded-full border border-slate-300 px-5 py-3 text-base font-semibold text-slate-700 transition hover:bg-slate-100"
+                  >
+                    {t.back}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={resetQuiz}
+                    className="focus-ring rounded-full bg-emerald-700 px-6 py-3 text-base font-semibold text-white transition hover:bg-emerald-800"
+                  >
+                    {t.startOver}
+                  </button>
+                </div>
+              </>
+            )}
+          </section>
 
-                          <div className="mt-5 flex justify-end">
-                            <button
-                              type="button"
-                              onClick={() => setOpenDetail(null)}
-                              className="focus-ring rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100"
-                            >
-                              Close details ↑
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                    </article>
-                  );
-                })}
-              </div>
-
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <button
-                  type="button"
-                  onClick={goBack}
-                  className="focus-ring rounded-full border border-slate-300 px-5 py-3 text-base font-semibold text-slate-700 transition hover:bg-slate-100"
-                >
-                  Back
-                </button>
-                <button
-                  type="button"
-                  onClick={resetQuiz}
-                  className="focus-ring rounded-full bg-emerald-700 px-6 py-3 text-base font-semibold text-white transition hover:bg-emerald-800"
-                >
-                  Start over
-                </button>
-              </div>
-            </>
-          )}
-        </section>
-
-        <section className="mt-8 rounded-[1.75rem] border border-amber-200 bg-amber-50 p-5 sm:p-6">
-          <p className="text-base leading-7 text-amber-900">
-            Your answers stay on your screen — nothing is saved, stored, or shared. For a more exact estimate, use the{" "}
-            <a
-              href="https://www.coveredca.com/shop-and-compare/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline decoration-dotted underline-offset-2 hover:text-amber-700"
-            >
-              Covered California Shop and Compare tool
-            </a>.
-          </p>
-        </section>
-      </main>
-    </div>
-    {isResultsStep && age && need && printBenefits.length > 0 && (
-      <PrintSummary
-        pageTitle="Your Personalized Benefits Summary"
-        eligibilitySummary={eligibilitySummary}
-        benefits={printBenefits}
-      />
-    )}
+          <section className="mt-8 rounded-[1.75rem] border border-amber-200 bg-amber-50 p-5 sm:p-6">
+            <p className="text-base leading-7 text-amber-900">
+              {t.disclaimerText}{" "}
+              <a
+                href="https://www.coveredca.com/shop-and-compare/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline decoration-dotted underline-offset-2 hover:text-amber-700"
+              >
+                {t.disclaimerLink}
+              </a>
+              .
+            </p>
+          </section>
+        </main>
+      </div>
+      {isResultsStep && age && need && printBenefits.length > 0 && (
+        <PrintSummary
+          pageTitle="Your Personalized Benefits Summary"
+          eligibilitySummary={eligibilitySummary}
+          benefits={printBenefits}
+        />
+      )}
     </>
   );
 }
