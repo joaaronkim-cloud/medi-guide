@@ -59,7 +59,7 @@ const situations = [
       },
     ],
     action:
-      "Compare Medi-Cal vs. Covered California first. If your income dropped below about 138% of the federal poverty level (~$20,120/year for one person), Medi-Cal may be free. Otherwise, use Covered California's 60-day special enrollment window.",
+      "Compare Medi-Cal vs. Covered California first. If your income dropped below about 138% of the federal poverty level (~$22,025/year for one person in 2026), Medi-Cal may be free. Otherwise, use Covered California's 60-day special enrollment window.",
   },
   {
     id: "disability",
@@ -405,7 +405,7 @@ export default function BySituationPage() {
         <section className="mt-6 rounded-[2rem] border border-white/70 bg-white/92 p-6 shadow-card sm:p-10">
           <h2 className="text-2xl font-bold tracking-tight text-ink">Not sure which situation fits?</h2>
           <p className="mt-3 text-lg leading-8 text-slate-700">
-            Answer three quick questions to get a personalized starting point.
+            Answer four quick questions to get a personalized starting point.
           </p>
           <div className="mt-5 flex flex-wrap gap-4">
             <Link

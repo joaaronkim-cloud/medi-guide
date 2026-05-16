@@ -25,8 +25,8 @@ const audienceCards = [
 
 const howItWorksSteps = [
   {
-    title: "Answer 3 quick questions",
-    description: "Your age, your situation, and what you need help with most.",
+    title: "Answer 4 quick questions",
+    description: "Your age, your situation, what you need help with, and your income range.",
   },
   {
     title: "See what fits you",
@@ -42,7 +42,7 @@ const faqItems = [
   {
     question: "Do I need to make an account to use MediGuide?",
     answer:
-      "No. MediGuide is free to use, and the homepage quiz flow is designed to work without signup.",
+      "No. MediGuide is completely free to use with no account required. The quiz on the Find My Benefits page takes about 2 minutes and nothing you enter is saved or stored.",
   },
   {
     question: "Will this tell me if I qualify for Medi-Cal or Covered California?",

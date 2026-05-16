@@ -16,7 +16,7 @@ const applyCards = [
       "Apply online at BenefitsCal.com — the fastest way to start.",
       "You can also apply through Covered California and the system will automatically check your Medi-Cal eligibility.",
       "Or visit your county DPSS (Department of Public Social Services) office in person.",
-      "For most adults ages 19–64, you may qualify if your income is below roughly 138% of the federal poverty level (about $20,120 per year for one person in 2024).",
+      "For most adults ages 19–64, you may qualify if your income is below roughly 138% of the federal poverty level (about $22,025 per year for one person in 2026).",
       "Processing usually takes up to 45 days, but many applicants are approved faster. You do not have to wait to see a doctor — ask your provider about presumptive eligibility.",
     ],
     contact: "BenefitsCal: benefitscal.com or 1-877-847-3663",
@@ -95,7 +95,7 @@ const faqItems = [
   {
     question: "What if I earn too much for Medi-Cal but can't afford private insurance?",
     answer:
-      "Covered California may still help you through premium tax credits. Many people who earn up to 400% of the federal poverty level — about $58,320 per year for a single person in 2024 — qualify for some help with monthly costs. Use CoveredCA.com's Shop and Compare tool to see what you may save.",
+      "Covered California may still help you through premium tax credits. Federal subsidies are available for income up to 400% of the federal poverty level — about $63,840 per year for a single person in 2026. Note: the enhanced subsidies from 2021–2025 (IRA/ARPA) expired at the end of 2025, so 2026 premiums are higher on average. Use CoveredCA.com's Shop and Compare tool to see your actual estimated cost.",
   },
   {
     question: "What if I applied but got denied?",
@@ -120,12 +120,12 @@ const faqItems = [
   {
     question: "Will applying for Medi-Cal affect my immigration case?",
     answer:
-      "For most Californians, applying for Medi-Cal does not trigger immigration concerns. Emergency Medi-Cal is available to everyone regardless of status. As of January 2024, California expanded full-scope Medi-Cal to all income-eligible adults regardless of immigration status. If you are unsure about your specific situation, a legal aid organization can give you personal guidance.",
+      "Emergency Medi-Cal is available to everyone regardless of immigration status. Important 2026 update: as of January 1, 2026, new undocumented adults (19+) can no longer enroll in full-scope Medi-Cal — only Emergency Medi-Cal and pregnancy coverage remain available for new adult applicants in this group. Children under 19, pregnant people, and former foster youth under 26 are still fully covered regardless of status. If you are already enrolled in Medi-Cal, you can keep your coverage as long as you renew on time. A legal aid organization can give you guidance specific to your situation.",
   },
   {
     question: "What is the income limit for Medi-Cal?",
     answer:
-      "For most adults ages 19–64, the limit is about 138% of the federal poverty level — roughly $20,120 per year for a single person in 2024. Children and pregnant people qualify at much higher income levels. These amounts change each year when the federal poverty guidelines are updated.",
+      "For most adults ages 19–64, the limit is about 138% of the federal poverty level — roughly $22,025 per year for a single person in 2026. For a family of 4, the limit is approximately $55,500. Children and pregnant people qualify at much higher income levels. These amounts are updated each year when HHS publishes new federal poverty guidelines.",
   },
 ] as const;
 
