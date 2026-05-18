@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { GlobalFooter } from "@/components/GlobalFooter";
 import { GlobalNav } from "@/components/GlobalNav";
 import "./globals.css";
@@ -34,6 +36,12 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
           <div className="flex-1">{children}</div>
           <GlobalFooter />
         </div>
+        {/* Vercel Web Analytics — free, no cookies, auto-enabled on Vercel */}
+        <Analytics />
+        {/* Google Analytics 4 — add GA_MEASUREMENT_ID to Vercel env vars to activate */}
+        {process.env.NEXT_PUBLIC_GA_ID && (
+          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
+        )}
       </body>
     </html>
   );
