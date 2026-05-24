@@ -141,6 +141,30 @@ export default function AboutPage() {
           </p>
         </section>
 
+        {/* Who built this */}
+        <section className="mt-5 rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-card sm:p-8">
+          <h2 className="text-2xl font-bold tracking-tight text-ink sm:text-3xl">Who built this</h2>
+          <p className="mt-4 text-lg leading-8 text-slate-700">
+            MediGuide was created by Aaron Kim, an undergraduate at UC Davis, after noticing a gap that
+            rarely gets talked about: millions of Californians are technically eligible for health coverage
+            but never receive it — not because they don&apos;t qualify, but because no one has ever explained
+            what they qualify for in plain language. The programs exist. The funding exists. The gap is
+            in knowing where to start.
+          </p>
+          <p className="mt-4 text-lg leading-8 text-slate-700">
+            MediGuide is an independent project with no commercial ties, no advertising, and no data
+            collection. If you have feedback, spot something inaccurate, or want to discuss bringing
+            MediGuide into a clinical or community setting, you can reach Aaron directly at{" "}
+            <a
+              href="mailto:aarkim@ucdavis.edu"
+              className="font-semibold text-brand-700 underline decoration-dotted underline-offset-2 hover:text-brand-900"
+            >
+              aarkim@ucdavis.edu
+            </a>
+            .
+          </p>
+        </section>
+
         <section className="mt-8 rounded-[1.75rem] border border-brand-100 bg-brand-50 p-5 sm:p-6">
           <p className="text-lg font-bold text-ink">Ready to find your coverage options?</p>
           <p className="mt-2 text-base leading-7 text-slate-700">
