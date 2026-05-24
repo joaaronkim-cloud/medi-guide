@@ -161,8 +161,24 @@ export default function AboutPage() {
             >
               aarkim@ucdavis.edu
             </a>
-            .
+            {" "}or through the feedback form below.
           </p>
+          <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+            <a
+              href="https://docs.google.com/forms/d/e/1FAIpQLScCWoXsn5pytLf2iDjZYgr338nFz88nL7u1bhssUHOIh68l4w/viewform?usp=dialog"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="focus-ring inline-flex rounded-full bg-brand-700 px-5 py-3 text-base font-semibold text-white transition hover:bg-brand-900"
+            >
+              Open Feedback Form &rarr;
+            </a>
+            <Link
+              href="/contact"
+              className="focus-ring inline-flex rounded-full border border-slate-300 px-5 py-3 text-base font-semibold text-slate-700 transition hover:bg-slate-50"
+            >
+              Contact Page
+            </Link>
+          </div>
         </section>
 
         <section className="mt-8 rounded-[1.75rem] border border-brand-100 bg-brand-50 p-5 sm:p-6">
