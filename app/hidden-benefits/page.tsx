@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PrintSummary, type PrintBenefit } from "@/components/PrintSummary";
+import { TelText } from "@/components/TelText";
 
 export const metadata: Metadata = {
   title: "Hidden Benefits | MediGuide.health",
@@ -233,7 +234,9 @@ export default function HiddenBenefitsPage() {
 
               <div className="mt-5">
                 <p className="text-base font-semibold text-ink">What to do right now:</p>
-                <p className="mt-2 text-lg leading-8 text-slate-700">{benefit.action}</p>
+                <p className="mt-2 text-lg leading-8 text-slate-700">
+                  <TelText text={benefit.action} />
+                </p>
               </div>
 
               <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1">

@@ -41,24 +41,40 @@ export default function ContactPage() {
             {[
               {
                 label: "Apply for Medi-Cal or CalFresh",
-                detail: "BenefitsCal: 1-877-847-3663",
+                agency: "BenefitsCal:",
+                phone: "1-877-847-3663",
+                tel: "18778473663",
               },
               {
                 label: "Enroll in Covered California",
-                detail: "Covered CA: 1-800-300-1506",
+                agency: "Covered CA:",
+                phone: "1-800-300-1506",
+                tel: "18003001506",
               },
               {
                 label: "Medicare questions or enrollment",
-                detail: "HICAP (free counseling): 1-800-434-0222",
+                agency: "HICAP (free counseling):",
+                phone: "1-800-434-0222",
+                tel: "18004340222",
               },
               {
                 label: "Current Medi-Cal plan questions",
-                detail: "Medi-Cal Member Help Center: 1-800-541-5555",
+                agency: "Medi-Cal Member Help Center:",
+                phone: "1-800-541-5555",
+                tel: "18005415555",
               },
             ].map((item) => (
               <div key={item.label} className="rounded-[1.25rem] bg-white p-4">
                 <p className="text-base font-semibold text-ink">{item.label}</p>
-                <p className="mt-1 text-sm text-slate-600">{item.detail}</p>
+                <p className="mt-1 text-sm text-slate-600">
+                  {item.agency}{" "}
+                  <a
+                    href={`tel:${item.tel}`}
+                    className="font-semibold text-brand-700 hover:text-brand-900 hover:underline"
+                  >
+                    {item.phone}
+                  </a>
+                </p>
               </div>
             ))}
           </div>

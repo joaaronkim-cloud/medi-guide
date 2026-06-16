@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState, useEffect } from "react";
 import { PrintSummary, type PrintBenefit } from "@/components/PrintSummary";
+import { TelText } from "@/components/TelText";
 import { BENEFIT_DETAILS } from "@/data/benefitDetails";
 import { BENEFIT_DETAILS_ES } from "@/data/benefitDetailsEs";
 
@@ -36,7 +37,6 @@ type ResultCard = {
 };
 
 const QUESTION_COUNT = 4;
-const LANG_EVENT = "medi-lang-change";
 
 // ── Option arrays (values are programmatic; labels are English source) ────────
 
@@ -680,21 +680,24 @@ export function FindMyBenefitsQuiz() {
   const [openDetail, setOpenDetail] = useState<string | null>(null);
   const [lang, setLang] = useState<Lang>("en");
 
-  // Sync language with nav toggle via localStorage + custom event
+  // Restore language preference from localStorage
+  // Wrapped in try/catch — Safari private browsing throws on localStorage access
   useEffect(() => {
-    const stored = localStorage.getItem("medi-lang") as Lang | null;
-    if (stored === "es") setLang("es");
-
-    function handleLangChange(e: Event) {
-      setLang((e as CustomEvent<Lang>).detail);
+    try {
+      const stored = localStorage.getItem("medi-lang");
+      if (stored === "es") setLang("es");
+    } catch {
+      // localStorage unavailable — silently fall back to default "en"
     }
-    window.addEventListener(LANG_EVENT, handleLangChange);
-    return () => window.removeEventListener(LANG_EVENT, handleLangChange);
   }, []);
 
   function changeLang(next: Lang) {
     setLang(next);
-    localStorage.setItem("medi-lang", next);
+    try {
+      localStorage.setItem("medi-lang", next);
+    } catch {
+      // localStorage unavailable — preference won't persist across refreshes
+    }
   }
 
   const t = UI[lang];
@@ -1026,7 +1029,7 @@ export function FindMyBenefitsQuiz() {
                                 {detail.howToApply.phone && (
                                   <div className="rounded-[1rem] border border-brand-100 bg-brand-50 px-4 py-3">
                                     <p className="text-sm font-semibold text-brand-900">
-                                      {detail.howToApply.phone}
+                                      <TelText text={detail.howToApply.phone} />
                                     </p>
                                   </div>
                                 )}

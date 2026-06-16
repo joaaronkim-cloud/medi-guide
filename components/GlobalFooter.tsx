@@ -42,9 +42,9 @@ export function GlobalFooter() {
         </div>
 
         <div className="mt-8 rounded-[1.25rem] border border-slate-200 bg-slate-50 px-5 py-4 text-sm leading-6 text-slate-600">
-          <strong className="font-semibold text-slate-700">Español próximamente.</strong> We are working on a Spanish-language version of this guide. If you need help now, call{" "}
-          <span className="font-semibold text-brand-700">Covered California at 1-800-300-1506</span> or{" "}
-          <span className="font-semibold text-brand-700">BenefitsCal at 1-877-847-3663</span> — both offer Spanish-language support.
+          <strong className="font-semibold text-slate-700">El quiz está disponible en español.</strong> Our Benefits Quiz now supports Spanish — tap the <strong>ES</strong> button on the quiz page to switch. For bilingual enrollment help, call{" "}
+          <a href="tel:18003001506" className="font-semibold text-brand-700 hover:text-brand-900 hover:underline">Covered California at 1-800-300-1506</a> or{" "}
+          <a href="tel:18778473663" className="font-semibold text-brand-700 hover:text-brand-900 hover:underline">BenefitsCal at 1-877-847-3663</a>.
         </div>
       </div>
     </footer>

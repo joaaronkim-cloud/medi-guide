@@ -19,7 +19,9 @@ const applyCards = [
       "For most adults ages 19–64, you may qualify if your income is below roughly 138% of the federal poverty level (about $22,025 per year for one person in 2026).",
       "Processing usually takes up to 45 days, but many applicants are approved faster. You do not have to wait to see a doctor — ask your provider about presumptive eligibility.",
     ],
-    contact: "BenefitsCal: benefitscal.com or 1-877-847-3663",
+    contactLabel: "BenefitsCal: benefitscal.com",
+    phone: "1-877-847-3663",
+    tel: "18778473663",
     note: "You can start an application without having all your documents. Gather what you have and submit the rest later.",
   },
   {
@@ -29,11 +31,13 @@ const applyCards = [
     steps: [
       "Open enrollment runs November 1 through January 31 each year.",
       "If you lose coverage or have a qualifying life event — job loss, a move, a new baby, marriage — you have 60 days to enroll outside open enrollment.",
-      "Apply at CoveredCA.com or call 1-800-300-1506.",
+      "Apply at CoveredCA.com or call the number below.",
       "Free certified enrollment assisters are available across California to help you compare plans at no cost — find one at CoveredCA.com.",
       "Many Californians who earn too much for Medi-Cal still qualify for significant monthly premium savings through premium tax credits.",
     ],
-    contact: "Covered California: coveredca.com or 1-800-300-1506",
+    contactLabel: "Covered California: coveredca.com",
+    phone: "1-800-300-1506",
+    tel: "18003001506",
     note: "Use the Shop and Compare tool on CoveredCA.com to estimate your monthly costs before you formally enroll.",
   },
   {
@@ -41,55 +45,69 @@ const applyCards = [
     title: "Medicare",
     subtitle: "Federal health coverage for people 65 and older, and some younger people with disabilities",
     steps: [
-      "Apply through the Social Security Administration at SSA.gov or by calling 1-800-772-1213.",
+      "Apply through the Social Security Administration at SSA.gov.",
       "Your Initial Enrollment Period starts 3 months before your 65th birthday and ends 3 months after.",
       "If you have employer coverage, check whether you should delay Medicare Part B — enrolling while you still have employer coverage may let you avoid a late enrollment penalty later.",
       "For prescription drug coverage, enroll in a Medicare Part D plan at the same time you enroll in Medicare.",
       "HICAP (Health Insurance Counseling and Advocacy Program) offers free, unbiased Medicare counseling for California residents at any stage.",
     ],
-    contact: "HICAP (free Medicare counseling): 1-800-434-0222",
+    contactLabel: "HICAP — free Medicare counseling:",
+    phone: "1-800-434-0222",
+    tel: "18004340222",
     note: "Missing your Initial Enrollment Period without qualifying coverage can result in permanent late penalties that last the rest of your life.",
   },
-] as const;
+];
 
 const helpResources = [
   {
     name: "HICAP — Free Medicare Counseling",
     description:
       "One-on-one help comparing Medicare plans, understanding your options, and navigating appeals. Unbiased and available statewide.",
-    contact: "1-800-434-0222",
+    website: null,
+    phone: "1-800-434-0222",
+    tel: "18004340222",
   },
   {
     name: "BenefitsCal",
     description:
       "California's online portal to apply for Medi-Cal, CalFresh, and other public benefit programs.",
-    contact: "benefitscal.com or 1-877-847-3663",
+    website: "benefitscal.com",
+    phone: "1-877-847-3663",
+    tel: "18778473663",
   },
   {
     name: "Covered California",
     description:
       "Enroll in marketplace health insurance plans. Find certified enrollment helpers near you.",
-    contact: "coveredca.com or 1-800-300-1506",
+    website: "coveredca.com",
+    phone: "1-800-300-1506",
+    tel: "18003001506",
   },
   {
     name: "Medi-Cal Member Help Center",
     description:
       "Questions about your current Medi-Cal coverage, plan, or benefits.",
-    contact: "1-800-541-5555",
+    website: null,
+    phone: "1-800-541-5555",
+    tel: "18005415555",
   },
   {
     name: "2-1-1 — Local Referrals",
     description:
       "Local health and social service referrals in most California counties. Available in multiple languages.",
-    contact: "Dial 2-1-1",
+    website: null,
+    phone: "Dial 2-1-1",
+    tel: "211",
   },
   {
     name: "988 — Mental Health and Crisis Line",
     description:
       "Free, confidential mental health support and crisis help, available 24/7 by call or text. California connects to local crisis centers.",
-    contact: "Call or text 988",
+    website: null,
+    phone: "Call or text 988",
+    tel: "988",
   },
-] as const;
+];
 
 const faqItems = [
   {
@@ -217,7 +235,15 @@ export default function HelpPage() {
                 </div>
 
                 <div className="mt-5 rounded-[1.25rem] border border-brand-100 bg-brand-50 px-5 py-3">
-                  <p className="text-base font-semibold text-brand-900">{card.contact}</p>
+                  <p className="text-base font-semibold text-brand-900">
+                    {card.contactLabel}{" "}
+                    <a
+                      href={`tel:${card.tel}`}
+                      className="text-brand-700 hover:text-brand-900 hover:underline"
+                    >
+                      {card.phone}
+                    </a>
+                  </p>
                 </div>
 
                 <p className="mt-4 text-base leading-7 text-slate-600">
@@ -250,7 +276,15 @@ export default function HelpPage() {
               >
                 <p className="text-lg font-bold text-ink">{resource.name}</p>
                 <p className="mt-2 text-base leading-7 text-slate-700">{resource.description}</p>
-                <p className="mt-3 text-base font-semibold text-brand-700">{resource.contact}</p>
+                <p className="mt-3 text-base font-semibold text-brand-700">
+                  {resource.website && <>{resource.website} or </>}
+                  <a
+                    href={`tel:${resource.tel}`}
+                    className="hover:text-brand-900 hover:underline"
+                  >
+                    {resource.phone}
+                  </a>
+                </p>
               </div>
             ))}
           </div>

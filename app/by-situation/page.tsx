@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PrintSummary, type PrintBenefit } from "@/components/PrintSummary";
+import { TelText } from "@/components/TelText";
 
 export const metadata: Metadata = {
   title: "By Situation | MediGuide.health",
@@ -378,7 +379,9 @@ export default function BySituationPage() {
                       className="rounded-[1.25rem] border border-slate-100 bg-slate-50 px-5 py-4"
                     >
                       <p className="text-base font-semibold text-ink">{program.name}</p>
-                      <p className="mt-1 text-base leading-7 text-slate-700">{program.detail}</p>
+                      <p className="mt-1 text-base leading-7 text-slate-700">
+                        <TelText text={program.detail} />
+                      </p>
                     </div>
                   ))}
                 </div>
@@ -386,7 +389,9 @@ export default function BySituationPage() {
 
               <div className="mt-5 rounded-[1.25rem] border border-emerald-100 bg-emerald-50 px-5 py-4">
                 <p className="text-base font-semibold text-emerald-900">Next step:</p>
-                <p className="mt-1 text-base leading-7 text-emerald-900">{situation.action}</p>
+                <p className="mt-1 text-base leading-7 text-emerald-900">
+                  <TelText text={situation.action} linkClassName="font-semibold text-emerald-700 hover:text-emerald-900 hover:underline" />
+                </p>
               </div>
 
               <p className="mt-4 text-xs text-slate-400">Last reviewed: April 2026</p>
